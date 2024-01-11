@@ -10,6 +10,8 @@ using System.Text;
 using Data;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+
 public class GCInfo : MonoBehaviour
 {
     [SerializeField]
@@ -29,6 +31,7 @@ public class GCInfo : MonoBehaviour
     UdpClient controlClient;
     UdpClient forwardedStatusClient;
 
+
     void Start()
     {
         Debug.Log("Start");
@@ -46,15 +49,52 @@ public class GCInfo : MonoBehaviour
 
 
     // Update is called once per frame
+    // void Update()
+    // {
+    //     Debug.Log("Update");
+    //     if (controlClient != null)
+    //     {
+    //         string data = ReceiveMessages(controlClient, targetIpAddress, controlPort, "RGTr", "Regular Control");
+    //         if (data != "FAIL")
+    //         {
+    //             _title.text = data;
+    //         }
+    //     }
+    // }
+
     void Update()
     {
-        Debug.Log("Update");
+        // Debug.Log("Update");
+
+        // Handle RGTr asynchronously
+        Task.Run(() => HandleRGTrPacket("RGTr"));
+
+        // Handle RGrt asynchronously
+        Task.Run(() => HandleRGrtPacket("RGrt"));
+    }
+
+    async Task HandleRGTrPacket(string headerMagic)
+    {
         if (controlClient != null)
         {
-            string data = ReceiveMessages(controlClient, targetIpAddress, controlPort, "RGTr", "Regular Control");
+            string data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "Regular Control"));
             if (data != "FAIL")
             {
-                _title.text = data;
+                // Handle the data accordingly
+                Debug.Log($"Received {headerMagic}: {data}");
+            }
+        }
+    }
+
+     async Task HandleRGrtPacket(string headerMagic)
+    {
+        if (controlClient != null)
+        {
+            string data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "GC Return Data"));
+            if (data != "FAIL")
+            {
+                // Handle the data accordingly
+                Debug.Log($"Received {headerMagic}: {data}");
             }
         }
     }
@@ -102,33 +142,41 @@ public class GCInfo : MonoBehaviour
 
                         // Upate the Team Logos
                         GameObject firstTeamLogoObject = GameObject.Find("FirstTeamLogo");
-                        if (firstTeamLogoObject != null){
+                        if (firstTeamLogoObject != null)
+                        {
                             LogoController firstTeamLogoController = firstTeamLogoObject.GetComponent<LogoController>();
 
-                            if (firstTeamLogoController != null) {
+                            if (firstTeamLogoController != null)
+                            {
                                 firstTeamLogoController.SetTeamNumber(data.team[0].teamNumber);
                             }
-                            else {
+                            else
+                            {
                                 Debug.LogError("LogoController component not found on the GameObject.");
                             }
                         }
-                        else {
+                        else
+                        {
                             Debug.LogError("GameObject with the specified name not found.");
                         }
 
                         // Upate the Team Logos
                         GameObject secondTeamLogoObject = GameObject.Find("SecondTeamLogo");
-                        if (secondTeamLogoObject != null){
+                        if (secondTeamLogoObject != null)
+                        {
                             LogoController secondTeamLogoController = secondTeamLogoObject.GetComponent<LogoController>();
 
-                            if (secondTeamLogoController != null) {
+                            if (secondTeamLogoController != null)
+                            {
                                 secondTeamLogoController.SetTeamNumber(data.team[1].teamNumber);
                             }
-                            else {
+                            else
+                            {
                                 Debug.LogError("LogoController component not found on the GameObject.");
                             }
                         }
-                        else {
+                        else
+                        {
                             Debug.LogError("GameObject with the specified name not found.");
                         }
 
@@ -160,9 +208,41 @@ public class GCInfo : MonoBehaviour
             return "Exception Occured";
         }
     }
-    
 
-    
+    static string ReceiveMessageGCReturnDataReceive(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
+    {
+        IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, targetPort);
+        try
+        {
+            byte[] receivedData = controlClient.Receive(ref remoteEndPoint);
+            string receivedHeaderMagic = Encoding.ASCII.GetString(receivedData, 0, 4);
+            string receivedMessage = Encoding.ASCII.GetString(receivedData);
+            int byteArrayLength = receivedMessage.Length;
+            string decodedMessage = Encoding.ASCII.GetString(receivedData, 5, byteArrayLength - 5);
+            Debug.Log($"{receivedHeaderMagic} Received: {receivedMessage} Extracted: {decodedMessage}");
+
+            GameControlReturnData data = new GameControlReturnData();
+
+            using (MemoryStream memoryStream = new MemoryStream(receivedData))
+            {
+                if (data.FromByteArray(memoryStream))
+                {
+                    return data.ToString();
+                }
+                return "FAIL";
+            }
+        }
+        catch (Exception err)
+        {
+            Debug.Log(err.ToString());
+            return "Exception Occured";
+        }
+    }
+
+
+
+
+
 
 
     static string GetTeamName(byte teamNumber)

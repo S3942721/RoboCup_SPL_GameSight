@@ -51,55 +51,70 @@ namespace Data
             }
         }
 
-        public bool FromByteArray(byte[] data)
+        public bool FromByteArray(MemoryStream stream)
         {
-            using (MemoryStream stream = new MemoryStream(data))
-            using (BinaryReader reader = new BinaryReader(stream, Encoding.UTF8))
+            BinaryReader reader = new BinaryReader(stream, Encoding.ASCII);
+            byte[] header = reader.ReadBytes(4);
+            string headerString = Encoding.UTF8.GetString(header);
+            if (headerString == GAMECONTROLLER_RETURN_STRUCT_HEADER)
             {
-                try
+                headerValid = true;
+
+                version = reader.ReadByte();
+                if (version == GAMECONTROLLER_RETURN_STRUCT_VERSION)
                 {
-                    header = Encoding.UTF8.GetString(reader.ReadBytes(4));
-                    if (header == GAMECONTROLLER_RETURN_STRUCT_HEADER)
-                    {
-                        headerValid = true;
+                    versionValid = true;
 
-                        version = reader.ReadByte();
-                        if (version == GAMECONTROLLER_RETURN_STRUCT_VERSION)
-                        {
-                            versionValid = true;
+                    playerNum = reader.ReadByte();
+                    playerNumValid = playerNum >= 1 && playerNum <= TeamInfo.MAX_NUM_PLAYERS;
 
-                            playerNum = reader.ReadByte();
-                            playerNumValid = playerNum >= 1 && playerNum <= TeamInfo.MAX_NUM_PLAYERS;
+                    teamNum = reader.ReadByte();
+                    teamNumValid = teamNum > 0;
 
-                            teamNum = reader.ReadByte();
-                            teamNumValid = teamNum > 0;
+                    fallen = reader.ReadByte() != 0;
+                    fallenValid = fallen || !fallen;
 
-                            fallen = reader.ReadByte() != 0;
-                            fallenValid = fallen || !fallen;
+                    pose[0] = reader.ReadSingle();
+                    pose[1] = reader.ReadSingle();
+                    pose[2] = reader.ReadSingle();
+                    poseValid = !float.IsNaN(pose[0]) && !float.IsNaN(pose[1]) && !float.IsNaN(pose[2]);
 
-                            pose[0] = reader.ReadSingle();
-                            pose[1] = reader.ReadSingle();
-                            pose[2] = reader.ReadSingle();
-                            poseValid = !float.IsNaN(pose[0]) && !float.IsNaN(pose[1]) && !float.IsNaN(pose[2]);
+                    ballAge = reader.ReadSingle();
 
-                            ballAge = reader.ReadSingle();
-
-                            ball[0] = reader.ReadSingle();
-                            ball[1] = reader.ReadSingle();
-                            ballValid = !float.IsNaN(ballAge) && !float.IsNaN(ball[0]) && !float.IsNaN(ball[1]);
-                        }
-                    }
+                    ball[0] = reader.ReadSingle();
+                    ball[1] = reader.ReadSingle();
+                    ballValid = !float.IsNaN(ballAge) && !float.IsNaN(ball[0]) && !float.IsNaN(ball[1]);
                 }
-                catch (Exception)
-                {
-                    valid = false;
-                    return false;
-                }
-
-                valid = headerValid && versionValid && playerNumValid && teamNumValid && fallenValid && poseValid && ballValid;
-
-                return valid;
             }
+
+            valid = headerValid && versionValid && playerNumValid && teamNumValid && fallenValid && poseValid && ballValid;
+
+            return valid;
+        }
+
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"Header: {header}");
+            sb.AppendLine($"Version: {version}");
+            sb.AppendLine($"Player Number: {playerNum}");
+            sb.AppendLine($"Team Number: {teamNum}");
+            sb.AppendLine($"Fallen: {fallen}");
+            sb.AppendLine($"Pose: [{pose[0]}, {pose[1]}, {pose[2]}]");
+            sb.AppendLine($"Ball Age: {ballAge}");
+            sb.AppendLine($"Ball: [{ball[0]}, {ball[1]}]");
+            sb.AppendLine($"Valid: {valid}");
+            sb.AppendLine($"Header Valid: {headerValid}");
+            sb.AppendLine($"Version Valid: {versionValid}");
+            sb.AppendLine($"Player Number Valid: {playerNumValid}");
+            sb.AppendLine($"Team Number Valid: {teamNumValid}");
+            sb.AppendLine($"Fallen Valid: {fallenValid}");
+            sb.AppendLine($"Pose Valid: {poseValid}");
+            sb.AppendLine($"Ball Valid: {ballValid}");
+
+            return sb.ToString();
         }
     }
 }
+
