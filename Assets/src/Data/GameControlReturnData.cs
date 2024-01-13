@@ -1,6 +1,9 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Net;
+
 
 namespace Data
 {
@@ -54,8 +57,12 @@ namespace Data
         public bool FromByteArray(MemoryStream stream)
         {
             BinaryReader reader = new BinaryReader(stream, Encoding.ASCII);
+            byte[] ipAddressBytes = reader.ReadBytes(4);
+            string ipAddress = new IPAddress(ipAddressBytes).ToString();
+            // Console.WriteLine($"Robot ip: {ipAddress}");
             byte[] header = reader.ReadBytes(4);
             string headerString = Encoding.UTF8.GetString(header);
+            // Console.WriteLine($"**headerString: {headerString}");
             if (headerString == GAMECONTROLLER_RETURN_STRUCT_HEADER)
             {
                 headerValid = true;
