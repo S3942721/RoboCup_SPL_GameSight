@@ -87,7 +87,7 @@ public class GCInfo
             if (data != "FAIL")
             {
                 // Handle the data accordingly
-                Console.WriteLine($"Received {headerMagic}");
+                Console.WriteLine($"Received {headerMagic}:\n{data}");
             }
         }
     }
