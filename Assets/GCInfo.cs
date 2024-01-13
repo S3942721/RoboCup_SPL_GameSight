@@ -36,6 +36,7 @@ public class GCInfo : MonoBehaviour
     {
         Debug.Log("Start");
         controlClient = new UdpClient(controlPort);
+        forwardedStatusClient = new UdpClient(forwardedStatusPort);
         IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, controlPort);
         byte[] receivedData = controlClient.Receive(ref remoteEndPoint);
         Debug.Log(remoteEndPoint.Address.ToString());
@@ -88,13 +89,14 @@ public class GCInfo : MonoBehaviour
 
      async Task HandleRGrtPacket(string headerMagic)
     {
-        if (controlClient != null)
+        Debug.Log("Start HandleRGrtPacket");
+        if (forwardedStatusClient != null)
         {
-            string data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "GC Return Data"));
+            string data = await Task.Run(() => ReceiveMessageGCReturnDataReceive(forwardedStatusClient, targetIpAddress, forwardedStatusPort, headerMagic, "GC Return Data"));
             if (data != "FAIL")
             {
                 // Handle the data accordingly
-                Debug.Log($"Received {headerMagic}: {data}");
+                Debug.Log($"Received {headerMagic}:\n{data}");
             }
         }
     }
@@ -129,7 +131,7 @@ public class GCInfo : MonoBehaviour
             string receivedMessage = Encoding.ASCII.GetString(receivedData);
             int byteArrayLength = receivedMessage.Length;
             string decodedMessage = Encoding.ASCII.GetString(receivedData, 5, byteArrayLength - 5);
-            Debug.Log($"{receivedHeaderMagic} Received: {receivedMessage} Extracted: {decodedMessage}");
+            // Debug.Log($"{receivedHeaderMagic} Received: {receivedMessage} Extracted: {decodedMessage}");
 
             GameControlData data = new GameControlData();
 
@@ -219,8 +221,8 @@ public class GCInfo : MonoBehaviour
             string receivedMessage = Encoding.ASCII.GetString(receivedData);
             int byteArrayLength = receivedMessage.Length;
             string decodedMessage = Encoding.ASCII.GetString(receivedData, 5, byteArrayLength - 5);
-            Debug.Log($"{receivedHeaderMagic} Received: {receivedMessage} Extracted: {decodedMessage}");
-
+            // Console.WriteLine($"{receivedHeaderMagic} WOW got a RGrt: {receivedMessage} Extracted: {decodedMessage}");
+            Console.WriteLine("====> Got some Data");
             GameControlReturnData data = new GameControlReturnData();
 
             using (MemoryStream memoryStream = new MemoryStream(receivedData))
@@ -229,6 +231,7 @@ public class GCInfo : MonoBehaviour
                 {
                     return data.ToString();
                 }
+                Debug.LogError("====> Failed to parse memory stream");
                 return "FAIL";
             }
         }
