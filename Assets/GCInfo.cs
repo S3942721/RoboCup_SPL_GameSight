@@ -12,12 +12,17 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
+[Serializable]
 public class GCInfo : MonoBehaviour
 {
-    [SerializeField]
-    private TMP_Text _title;
+    public TMP_Text _title;
+    public TMP_Text team0ScoreText;
+    public TMP_Text team1ScoreText;
+    public TMP_Text timerText;
+
     [SerializeField]
     public GameControlData gameControlData = new GameControlData();
+    [SerializeField]
     public GameControlReturnData gameControlReturnData = new GameControlReturnData();
     private bool updateReady = false;
     private bool receivePackets = true;
@@ -108,9 +113,9 @@ public class GCInfo : MonoBehaviour
             {
                 Debug.LogError("LogoController component not found on the GameObject.");
             }
+            UpdateScores();
+            UpdateTimer();
         }
-
-        
     }
 
 
@@ -260,13 +265,6 @@ public class GCInfo : MonoBehaviour
             return null;
         }
     }
-
-
-
-
-
-
-
     static string GetTeamName(byte teamNumber)
     {
         Console.WriteLine("getTeamName");
@@ -287,6 +285,47 @@ public class GCInfo : MonoBehaviour
         else
         {
             return "Unknown";
+        }
+    }
+
+    void UpdateScores()
+    {
+        // Check if gameControlData is not null before accessing its members
+        if (gameControlData != null)
+        {
+            // Assuming team[0] and team[1] represent the two teams
+            if (gameControlData.team != null && gameControlData.team.Length >= 2)
+            {
+                Debug.Log("Team0 Score!:" + gameControlData.team[0].score.ToString());
+                team0ScoreText.text = gameControlData.team[0].score.ToString();
+                team1ScoreText.text = gameControlData.team[1].score.ToString();
+            }
+            else
+            {
+                Debug.LogError("gameControlData.team is null or has insufficient length.");
+            }
+        }
+        else
+        {
+            Debug.LogError("gameControlData is null.");
+        }
+    }
+
+    void UpdateTimer()
+    {
+        // Check if gameControlData is not null before accessing its members
+        if (gameControlData != null)
+        {
+            // Assuming secsRemaining represents the time in seconds
+            Debug.Log("Timer!:" + gameControlData.secsRemaining);
+            int minutes = gameControlData.secsRemaining / 60;
+            int seconds = Math.Abs(gameControlData.secsRemaining % 60);
+
+            timerText.text = $"{minutes:D2}:{seconds:D2}";
+        }
+        else
+        {
+            Debug.LogError("gameControlData is null.");
         }
     }
 }
