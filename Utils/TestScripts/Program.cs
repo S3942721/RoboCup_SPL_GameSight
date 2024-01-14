@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 public class GCInfo
 {
     private string _title;
+
+    private GameControlData gameControlData = new GameControlData();
+    private readonly object consoleLock = new object();
+
     // Use a wildcard address for the target
     IPAddress targetIpAddress = IPAddress.Any;
 
@@ -27,8 +31,11 @@ public class GCInfo
     UdpClient controlClient;
     UdpClient forwardedStatusClient;
 
+    ConsoleColor originalColor = Console.ForegroundColor;
+
 
     static void Main() {
+        
         GCInfo gcInfo = new GCInfo();
 
         gcInfo.Start();
@@ -39,6 +46,7 @@ public class GCInfo
 
     void Start()
     {
+        Console.Clear(); // Clear the console
         Console.WriteLine("Start");
         controlClient = new UdpClient(controlPort);
         forwardedStatusClient = new UdpClient(forwardedStatusPort);
@@ -70,7 +78,7 @@ public class GCInfo
 
     void Update()
     {
-        // Console.WriteLine("Update");
+        
 
         // Handle RGTr asynchronously
         Task.Run(() => HandleRGTrPacket("RGTr"));
@@ -83,11 +91,17 @@ public class GCInfo
     {
         if (controlClient != null)
         {
-            string data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "Regular Control"));
-            if (data != "FAIL")
+            GameControlData data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "Regular Control"));
+            if (data != null)
             {
                 // Handle the data accordingly
-                Console.WriteLine($"Received {headerMagic}:\n{data}");
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"Received {headerMagic}:\n");
+                Console.ForegroundColor = originalColor;
+
+                string output = gameControlData.ToString();
+                StatusPrint(output, ConsoleColor.Blue);
+                // Console.WriteLine($"Team 0:\n{data.team[0].ToString()}");
             }
         }
     }
@@ -98,12 +112,14 @@ public class GCInfo
         if (forwardedStatusClient != null)
         {
             Console.WriteLine("====> await Task.Run");
-            string data = await Task.Run(() => ReceiveMessageGCReturnDataReceive(forwardedStatusClient, targetIpAddress, forwardedStatusPort, headerMagic, "GC Return Data"));
+            GameControlReturnData data = await Task.Run(() => ReceiveMessageGCReturnDataReceive(forwardedStatusClient, targetIpAddress, forwardedStatusPort, headerMagic, "GC Return Data"));
             Console.WriteLine("====> Got some data");
-            if (data != "FAIL")
+            if (data != null)
             {
                 // Handle the data accordingly
-                Console.WriteLine($"Received {headerMagic}:\n{data}");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Received {headerMagic}");
+                Console.ForegroundColor = originalColor;
                 // Console.WriteLine($"====> Received {headerMagic}");
             }
             // else {
@@ -132,7 +148,7 @@ public class GCInfo
 
 
 
-    static string ReceiveMessages(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
+    static GameControlData ReceiveMessages(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
     {
         IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, targetPort);
         try
@@ -213,20 +229,22 @@ public class GCInfo
                         output.AppendLine(data.team[1].PlayersToSring(playerNums1));
                         output.AppendLine("#############################################");
                         // Console.WriteLine(output.ToString());
-                        return (output.ToString());
+                        // return (output.ToString());
+                        return (data);
                     }
                 }
-                return "FAIL";
+                return null;
             }
         }
         catch (Exception err)
         {
             Console.WriteLine(err.ToString());
-            return "Exception Occured";
+            // return "Exception Occured";
+            return null;
         }
     }
 
-    static string ReceiveMessageGCReturnDataReceive(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
+    static GameControlReturnData ReceiveMessageGCReturnDataReceive(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
     {
         // Console.WriteLine("ReceiveMessageGCReturnDataReceive");
         IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, targetPort);
@@ -247,16 +265,16 @@ public class GCInfo
             {
                 if (data.FromByteArray(memoryStream))
                 {
-                    return data.ToString();
+                    return data;
                 }
                 Console.WriteLine("====> Failed to parse memory stream");
-                return "FAIL";
+                return null;
             }
         }
         catch (Exception err)
         {
             Console.WriteLine(err.ToString());
-            return "Exception Occured";
+            return null;
         }
     }
 
@@ -288,5 +306,17 @@ public class GCInfo
             return "Unknown";
         }
     }
+
+    void StatusPrint(string output, ConsoleColor color)
+    {
+        lock (consoleLock)
+        {
+            Console.SetCursorPosition(0, 0); // Set the cursor position to the top-left corner
+            Console.ForegroundColor = color;
+            Console.WriteLine(output);
+            Console.ForegroundColor = originalColor;
+        }
+    }
+
 }
 
