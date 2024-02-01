@@ -20,11 +20,28 @@ public class GCInfo : MonoBehaviour
     public TMP_Text team1ScoreText;
     public TMP_Text timerText;
 
+    public GameObject player0_1;
+    public GameObject player0_2;
+    public GameObject player0_3;
+    public GameObject player0_4;
+    public GameObject player0_5;
+    public GameObject player1_1;
+    public GameObject player1_2;
+    public GameObject player1_3;
+    public GameObject player1_4;
+    public GameObject player1_5;
+
+    public GameObject[] team0Players;
+    public GameObject[] team1Players;
+
+
+
     [SerializeField]
     public GameControlData gameControlData = new GameControlData();
     [SerializeField]
     public GameControlReturnData gameControlReturnData = new GameControlReturnData();
     private bool updateReady = false;
+    private bool returnUpdateReady = false;
     private bool receivePackets = true;
 
     // Use a wildcard address for the target
@@ -50,6 +67,39 @@ public class GCInfo : MonoBehaviour
     void Start()
     {
         Debug.Log("Start");
+
+        // Dynamically find and assign TMP_Text objects
+        try {
+            _title = GameObject.Find("TitleText").GetComponent<TMP_Text>();
+            team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
+            team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
+            timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
+        } catch {
+            Debug.Log("Scoredboard not present");
+        }
+
+        try {
+
+            // Dynamically find and assign player GameObjects
+            player0_1 = GameObject.Find("Player0-1");
+            player0_2 = GameObject.Find("Player0-2");
+            player0_3 = GameObject.Find("Player0-3");
+            player0_4 = GameObject.Find("Player0-4");
+            player0_5 = GameObject.Find("Player0-5");
+            player1_1 = GameObject.Find("Player1-1");
+            player1_2 = GameObject.Find("Player1-2");
+            player1_3 = GameObject.Find("Player1-3");
+            player1_4 = GameObject.Find("Player1-4");
+            player1_5 = GameObject.Find("Player1-5");
+
+            team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
+            team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
+        } catch {
+            Debug.Log("Players not present");
+        }
+
+
+
         controlClient = new UdpClient(controlPort);
         forwardedStatusClient = new UdpClient(forwardedStatusPort);
         IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, controlPort);
@@ -58,7 +108,12 @@ public class GCInfo : MonoBehaviour
         monitorRequestClient = new UdpClient();
         byte[] packet = Encoding.ASCII.GetBytes("RGTr\0");
         monitorRequestClient.Send(packet, packet.Length, new IPEndPoint(remoteEndPoint.Address, monitorPort));
-        _title.text = "Monitor request sent.";
+        if (_title != null) {
+            _title.text = "Monitor request sent.";
+        }
+        else {
+            Debug.Log("Monitor request sent.");
+        }
         monitorRequestClient.Close();
         GameObject firstTeamLogoObject = GameObject.Find("FirstTeamLogo");
         if (firstTeamLogoObject != null)
@@ -90,9 +145,26 @@ public class GCInfo : MonoBehaviour
 
     void Update()
     {
+        // Debug.Log("Update()");
         if (updateReady){
-            _title.text = gameControlData.ToString();
-            updateReady = false;
+            if (_title == null){
+                try {
+                    // Dynamically find and assign TMP_Text objects
+                    _title = GameObject.Find("TitleText").GetComponent<TMP_Text>();
+                    team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
+                    team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
+                    timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
+                } catch {
+                    Debug.Log("Scoreboard not present");
+                }
+            }
+
+            
+
+            
+            if (_title != null){
+                _title.text = gameControlData.ToString();
+            }
 
             // Update the Team Logos
             if (firstTeamLogoController != null)
@@ -113,8 +185,97 @@ public class GCInfo : MonoBehaviour
             {
                 Debug.LogError("LogoController component not found on the GameObject.");
             }
-            UpdateScores();
-            UpdateTimer();
+            
+            if (team0ScoreText != null){
+                UpdateScores();
+                UpdateTimer();
+                Debug.Log("HERERERERERER");
+            }
+            updateReady = false;
+        }
+
+        // Debug.Log("Checking if returnUpdateReady ");
+        // Debug.Log(returnUpdateReady);
+        if (returnUpdateReady){
+            // Debug.Log("returnUpdateReady"); 
+            if (player0_1 == null){
+                try {
+                    // Dynamically find and assign player GameObjects
+                    player0_1 = GameObject.Find("Player0-1");
+                    player0_2 = GameObject.Find("Player0-2");
+                    player0_3 = GameObject.Find("Player0-3");
+                    player0_4 = GameObject.Find("Player0-4");
+                    player0_5 = GameObject.Find("Player0-5");
+                    player1_1 = GameObject.Find("Player1-1");
+                    player1_2 = GameObject.Find("Player1-2");
+                    player1_3 = GameObject.Find("Player1-3");
+                    player1_4 = GameObject.Find("Player1-4");
+                    player1_5 = GameObject.Find("Player1-5");
+
+                    team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
+                    team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
+                } catch {
+                    Debug.Log("Players not present");
+                }
+            }
+
+            if (player0_1 != null && gameControlReturnData != null)
+            {
+                Debug.Log("Moving players based on gameControlReturnData ");
+                int playerIndex = gameControlReturnData.playerNum - 1;
+                if (gameControlReturnData.teamNumValid) {
+                    Debug.Log("PLayer index:" + playerIndex);
+                    GameObject currentPlayer;
+                    if (gameControlReturnData.teamNum == 0){
+                        currentPlayer = team0Players[playerIndex];
+                    }
+                    else {
+                        currentPlayer = team1Players[playerIndex];
+                    }
+                    
+                    Debug.Log(currentPlayer);
+
+                    if (currentPlayer != null)
+                    {
+                        // Get the Transform component of the player
+                        Transform playerTransform = currentPlayer.transform;
+
+                        // Check if pose data is valid before updating the position
+                        if (gameControlReturnData.poseValid)
+                        {
+                            GameObject fieldObject = GameObject.Find("Field"); 
+                            if (fieldObject != null) {
+                                Transform fieldTransform = fieldObject.transform;
+                                Vector3 fieldRelativePosition = new Vector3(gameControlReturnData.pose[0], 0.25f, gameControlReturnData.pose[2]);
+                                playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
+                            }
+                            // Assign the pose from gameControlReturnData to the player's position
+                            // playerTransform.position = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
+                        }
+                    }
+                }
+                else {
+                    Debug.Log("Not valid playernumber");
+                    // Debug.Log("Moving Team0 players based randomly ");
+                    // foreach (GameObject player in team0Players)
+                    // {
+                    //     // Get the Transform component of the player
+                    //     Transform playerTransform = player.transform;
+
+                    //     GameObject fieldObject = GameObject.Find("Field"); 
+                    //     if (fieldObject != null) {
+                    //         Transform fieldTransform = fieldObject.transform;
+                    //         // Modify the position (you can adjust these values as needed)
+                    //         float newX = UnityEngine.Random.Range(-2.3f, 2.3f); // Example: random X position between -5 and 5
+                    //         float newY = .25f;
+                    //         float newZ = UnityEngine.Random.Range(-1.53f, 1.53f); // Example: random Z position between -5 and 5
+                    //         Vector3 fieldRelativePosition = new Vector3(newX, newY, newZ);
+                    //         playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
+                    //     }
+                    // }
+                }
+            returnUpdateReady = false;
+            }
         }
     }
 
@@ -129,7 +290,7 @@ public class GCInfo : MonoBehaviour
                 {
                     // Handle the data accordingly
                     gameControlData = data;
-                    Debug.Log($"Received {headerMagic}: {gameControlData.ToString()}");
+                    // Debug.Log($"Received {headerMagic}: {gameControlData.ToString()}");
                     updateReady = true;
 
                     
@@ -138,10 +299,10 @@ public class GCInfo : MonoBehaviour
         }
     }
 
-     async Task HandleRGrtPacket(string headerMagic)
+    async Task HandleRGrtPacket(string headerMagic)
     {
         while(receivePackets){
-        Debug.Log("Start HandleRGrtPacket");
+        // Debug.Log("Start HandleRGrtPacket");
             if (forwardedStatusClient != null)
             {
                 // Debug.Log("====> await Task.Run");
@@ -150,8 +311,8 @@ public class GCInfo : MonoBehaviour
                 if (data != null)
                 {
                     gameControlReturnData = data;
-                    Debug.Log($"Received {headerMagic}:\n{data.ToString()}");
-                    updateReady = true;
+                    // Debug.Log($"Received {headerMagic}:\n{data.ToString()}");
+                    returnUpdateReady = true;
                 }
             }
         }

@@ -37,7 +37,6 @@ public class PlaceCanvasOnPlane : MonoBehaviour
                         touchStartPos = touchPosition;
                         isDragging = true;
 
-                        // Raycast to find a horizontal plane to place the anchor
                         if (arRaycastManager.Raycast(touchPosition, hits, TrackableType.PlaneWithinPolygon))
                         {
                             ARPlane plane = arPlaneManager.GetPlane(hits[0].trackableId);
@@ -46,7 +45,6 @@ public class PlaceCanvasOnPlane : MonoBehaviour
                             {
                                 Pose hitPose = hits[0].pose;
 
-                                // Create or update anchor at the hit position
                                 if (currentAnchor == null)
                                 {
                                     currentAnchor = arAnchorManager.AddAnchor(hitPose);
@@ -57,7 +55,6 @@ public class PlaceCanvasOnPlane : MonoBehaviour
                                     currentAnchor.transform.rotation = hitPose.rotation;
                                 }
 
-                                // Move the bottom of the canvas to the hit position
                                 float canvasHeight = GetComponent<RectTransform>().rect.height;
                                 Vector3 newPosition = new Vector3(hitPose.position.x, hitPose.position.y - canvasHeight / 2f, hitPose.position.z);
 
@@ -71,8 +68,13 @@ public class PlaceCanvasOnPlane : MonoBehaviour
                 case TouchPhase.Moved:
                     if (isDragging && TryGetTouchPosition(touch.position, out var currentTouchPosition))
                     {
-                        Vector3 newPosition = Camera.main.ScreenToWorldPoint(new Vector3(currentTouchPosition.x, currentTouchPosition.y, 10f)) + offset;
-                        transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
+                        // Use the ARRaycastHit pose for positioning
+                        if (arRaycastManager.Raycast(currentTouchPosition, hits, TrackableType.PlaneWithinPolygon))
+                        {
+                            Pose hitPose = hits[0].pose;
+                            Vector3 newPosition = new Vector3(hitPose.position.x, hitPose.position.y - offset.y, hitPose.position.z);
+                            transform.position = newPosition;
+                        }
                     }
                     break;
 
@@ -102,7 +104,6 @@ public class PlaceCanvasOnPlane : MonoBehaviour
         Vector3 planeNormal = plane.normal;
         Vector3 expectedUpVector = Vector3.up;
 
-        // Check if the plane normal is roughly pointing upward
         return Vector3.Dot(planeNormal, expectedUpVector) > 0.9f;
     }
 }
