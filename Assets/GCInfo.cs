@@ -329,4 +329,3 @@ public class GCInfo : MonoBehaviour
         }
     }
 }
-
