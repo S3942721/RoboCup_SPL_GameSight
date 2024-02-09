@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/test.unity
     guid: a1609d48922997640855f2e5ed18269e
   m_configObjects:
-    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: c99b55d84c4064198b319c55be79f603,
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: de9f1755aaa9d6449b7dd19ecff8edec,
       type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 744b813df90924c169af73489b8325de,
       type: 2}
