@@ -189,7 +189,6 @@ public class GCInfo : MonoBehaviour
             if (team0ScoreText != null){
                 UpdateScores();
                 UpdateTimer();
-                Debug.Log("HERERERERERER");
             }
             updateReady = false;
         }
@@ -457,7 +456,7 @@ public class GCInfo : MonoBehaviour
             // Assuming team[0] and team[1] represent the two teams
             if (gameControlData.team != null && gameControlData.team.Length >= 2)
             {
-                Debug.Log("Team0 Score!:" + gameControlData.team[0].score.ToString());
+                // Debug.Log("Team0 Score!:" + gameControlData.team[0].score.ToString());
                 team0ScoreText.text = gameControlData.team[0].score.ToString();
                 team1ScoreText.text = gameControlData.team[1].score.ToString();
             }
@@ -478,7 +477,7 @@ public class GCInfo : MonoBehaviour
         if (gameControlData != null)
         {
             // Assuming secsRemaining represents the time in seconds
-            Debug.Log("Timer!:" + gameControlData.secsRemaining);
+            // Debug.Log("Timer!:" + gameControlData.secsRemaining);
             int minutes = gameControlData.secsRemaining / 60;
             int seconds = Math.Abs(gameControlData.secsRemaining % 60);
 

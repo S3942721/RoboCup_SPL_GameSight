@@ -24,7 +24,7 @@ public class LogoController : MonoBehaviour
     {
         // Assuming logos are in a folder named "Logos" under "Assets/Resources"
         string logoPath = "Logos/" + teamNumber.ToString();
-        Debug.Log("Loading Team Logo: " + logoPath);
+        // Debug.Log("Loading Team Logo: " + logoPath);
 
         // Load the logo dynamically
         Sprite logoSprite =  Resources.Load<Sprite>(logoPath);
