@@ -20,6 +20,11 @@ public class GCInfo : MonoBehaviour
     public TMP_Text team1ScoreText;
     public TMP_Text timerText;
 
+    public TMP_Text player1_3Text;
+    public TMP_Text player1_4Text;
+
+    public TMP_Text rgrtInfo;
+
     public GameObject player0_1;
     public GameObject player0_2;
     public GameObject player0_3;
@@ -74,6 +79,10 @@ public class GCInfo : MonoBehaviour
             team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
             team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
             timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
+
+            player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
+            player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
+            rgrtInfo = GameObject.Find("RGRT").GetComponent<TMP_Text>();
         } catch {
             Debug.Log("Scoredboard not present");
         }
@@ -196,6 +205,7 @@ public class GCInfo : MonoBehaviour
         // Debug.Log("Checking if returnUpdateReady ");
         // Debug.Log(returnUpdateReady);
         if (returnUpdateReady){
+            rgrtInfo.text = "returnUpdateReady";
             // Debug.Log("returnUpdateReady"); 
             if (player0_1 == null){
                 try {
@@ -221,8 +231,17 @@ public class GCInfo : MonoBehaviour
             if (player0_1 != null && gameControlReturnData != null)
             {
                 Debug.Log("Moving players based on gameControlReturnData ");
+                rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
                 int playerIndex = gameControlReturnData.playerNum - 1;
                 if (gameControlReturnData.teamNumValid) {
+
+                    // if (playerIndex == 2){
+                    //     player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+                    // }
+                    // else if (playerIndex == 3){
+                    //     player1_4Text.text = gameControlReturnData.pose[0].ToString() + "," + gameControlReturnData.pose[1].ToString();
+                    // }
+
                     Debug.Log("PLayer index:" + playerIndex);
                     GameObject currentPlayer;
                     if (gameControlReturnData.teamNum == 0){
@@ -242,12 +261,19 @@ public class GCInfo : MonoBehaviour
                         // Check if pose data is valid before updating the position
                         if (gameControlReturnData.poseValid)
                         {
-                            GameObject fieldObject = GameObject.Find("Field"); 
-                            if (fieldObject != null) {
-                                Transform fieldTransform = fieldObject.transform;
-                                Vector3 fieldRelativePosition = new Vector3(gameControlReturnData.pose[0], 0.25f, gameControlReturnData.pose[2]);
-                                playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
+                            if (playerIndex == 2){
+                                player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
                             }
+                            else if (playerIndex == 3){
+                                player1_4Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+                            }
+                            playerTransform.position = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
+                            // GameObject fieldObject = GameObject.Find("Field"); 
+                            // if (fieldObject != null) {
+                            //     Transform fieldTransform = fieldObject.transform;
+                            //     Vector3 fieldRelativePosition = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[2]/1000);
+                            //     playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
+                            // }
                             // Assign the pose from gameControlReturnData to the player's position
                             // playerTransform.position = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
                         }
