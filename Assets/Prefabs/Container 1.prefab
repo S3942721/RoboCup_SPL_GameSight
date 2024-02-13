@@ -332,6 +332,9 @@ MonoBehaviour:
   team0ScoreText: {fileID: 0}
   team1ScoreText: {fileID: 0}
   timerText: {fileID: 0}
+  player1_3Text: {fileID: 0}
+  player1_4Text: {fileID: 0}
+  rgrtInfo: {fileID: 0}
   player0_1: {fileID: 0}
   player0_2: {fileID: 0}
   player0_3: {fileID: 0}
@@ -683,7 +686,7 @@ GameObject:
   - component: {fileID: 7591027762866806880}
   m_Layer: 0
   m_Name: Container 1
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

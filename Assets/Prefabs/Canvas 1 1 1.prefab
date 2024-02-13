@@ -617,7 +617,7 @@ GameObject:
   - component: {fileID: 4077738998441366478}
   m_Layer: 5
   m_Name: Canvas 1 1 1
-  m_TagString: Spawnable
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
