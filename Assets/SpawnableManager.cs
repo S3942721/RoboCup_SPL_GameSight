@@ -44,14 +44,14 @@ public class SpawnableManager : MonoBehaviour
     // Update is called once per frame
     void Update()
 {
-    if (Input.touchCount == 0)
+    if (Input.touchCount == 0) // No touch input
     {
         return;
     }
 
     if (m_RaycastManager.Raycast(Input.GetTouch(0).position, m_Hits))
     {
-        if (Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.GetTouch(0).phase == TouchPhase.Began) // Touch input began (initial hold down)
         {
             // Destroy the existing spawned object before creating a new one
             if (spawnedObject != null)
@@ -68,7 +68,7 @@ public class SpawnableManager : MonoBehaviour
                 SpawnPrefab(m_Hits[0].pose.position);
             }
         }
-        else if (Input.GetTouch(0).phase == TouchPhase.Moved)
+        else if (Input.GetTouch(0).phase == TouchPhase.Moved) // Touch input moved (held and dragged)
         {
             // If there is an existing spawned object, move it
             if (spawnedObject != null)
@@ -76,7 +76,7 @@ public class SpawnableManager : MonoBehaviour
                 spawnedObject.transform.position = m_Hits[0].pose.position;
             }
         }
-        else if (Input.GetTouch(0).phase == TouchPhase.Ended)
+        else if (Input.GetTouch(0).phase == TouchPhase.Ended) // Touch input ended (Released key press)
         {
             // No need to set spawnedObject to null since it will be destroyed on Began
         }

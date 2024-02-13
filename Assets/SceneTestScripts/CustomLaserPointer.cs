@@ -1,48 +1,28 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class CustomLaserPointer : MonoBehaviour
 {
-    [SerializeField]
-    private Transform controllerAnchor;
-
-    [SerializeField]
-    private TextMeshProUGUI displayText = null;
+    [SerializeField] private Transform controllerAnchor;
+    [SerializeField] private TextMeshProUGUI displayText = null;
 
     [Header("Controller Button Actions")]
-    [SerializeField]
-    private OVRInput.RawButton meshRenderToggleAction;
+    [SerializeField] private OVRInput.RawButton meshRenderToggleAction;
+    [SerializeField] private OVRInput.RawButton objectsToggleAction;
+    [SerializeField] private OVRInput.RawButton restoreObjectsAction;
 
-    [SerializeField]
-    private OVRInput.RawButton objectsToggleAction;
-
-    [SerializeField]
-    private OVRInput.RawButton restoreObjectsAction;
-
-    [SerializeField]
-    private OVRInput.RawButton spawnObject;
-
-    [SerializeField]
-    GameObject spawnablePrefab;
-
-    GameObject spawnedObject;
-    
-    [Header("Line Render Settings")]
-    [SerializeField]
-    private float lineWidth = 0.01f;
-
-    [SerializeField]
-    private float lineMaxLength = 50f;
-
-    private RaycastHit hit;
-
-    private LineRenderer lineRenderer;
-
-    private List<GameObject> processedObjects = new List<GameObject>();
+    private LineRenderer lineRenderer; // The line renderer for the laser pointer
+    private RaycastHit hit; // The hit information from the raycast
+    private GameObject spawnedObject; // The object that was spawned
+    private Vector3? firstPoint = null; // The first point for the two-point spawning
+    private Coroutine waitForSecondRaycastCoroutine = null; // The coroutine to wait for the second raycast
+    private List<GameObject> processedObjects = new List<GameObject>(); // The list of processed objects
 
     private void Awake()
     {
+        // Initialize the spawned object and line renderer
         spawnedObject = null;
         lineRenderer = gameObject.GetComponent<LineRenderer>();
         lineRenderer.widthMultiplier = lineWidth;
@@ -50,115 +30,99 @@ public class CustomLaserPointer : MonoBehaviour
 
     void Update()
     {
+        // Get the position and rotation of the controller anchor
         Vector3 anchorPosition = controllerAnchor.position;
         Quaternion anchorRotation = controllerAnchor.rotation;
 
+        // Cast a ray from the controller anchor in the direction it's pointing
         if (Physics.Raycast(new Ray(anchorPosition, anchorRotation * Vector3.forward), out hit, lineMaxLength))
         {
+            // Get the object that was hit by the raycast
             GameObject objectHit = hit.transform.gameObject;
 
-            //TODO - Implement OVR Semantic Classification Display
-            OVRSemanticClassification classification = objectHit?.GetComponentInParent<OVRSemanticClassification>();
+            // Update the display text and line renderer positions
+            UpdateDisplayText(objectHit);
+            UpdateLineRendererPositions(anchorPosition, hit.point);
 
-            if(classification != null && classification.Labels?.Count > 0)
+            // Try to spawn an object if the spawn button is pressed
+            if (OVRInput.GetDown(spawnObject))
             {
-                displayText.text = classification.Labels[0];
+                TrySpawnObject(objectHit, hit);
             }
-            else
-            {
-                displayText.text = string.Empty;
-            }
-
-
-            lineRenderer.SetPosition(0, anchorPosition);
-            lineRenderer.SetPosition(1, hit.point);
-
-            if (spawnablePrefab.CompareTag("Wall") && classification != null && classification.Contains(OVRSceneManager.Classification.WallFace)){
-                if(OVRInput.GetDown(spawnObject)){
-                    SpawnSomething(hit);
-                }
-            }
-            else if (spawnablePrefab.CompareTag("Floor") && classification != null && classification.Contains(OVRSceneManager.Classification.Floor)){
-                if(OVRInput.GetDown(spawnObject)){
-                    SpawnSomething(hit);
-                }
-            }
-
-
-            // //TODO - Implement Semantic Objects (GameObject Toggle and Mesh Renderer Toggle)
-            // if (classification != null && (classification.Contains(OVRSceneManager.Classification.WallFace) || classification.Contains(OVRSceneManager.Classification.Floor)))
-            // {
-            //     // toggle visibility completely
-            //     if (OVRInput.GetDown(objectsToggleAction))
-            //     {
-            //         objectHit.SetActive(false);
-            //         AddProcessedObject(objectHit);
-            //     }
-            //     // toggle just mesh mesh renderer and collider will still be active
-            //     else if (OVRInput.GetDown(meshRenderToggleAction))
-            //     {
-            //         objectHit.GetComponent<MeshRenderer>().enabled = false;
-            //         AddProcessedObject(objectHit);
-            //     }
-            //     else if(OVRInput.GetDown(spawnObject)){
-            //         SpawnSomething(hit.point);
-            //     }
-
-            // }
-        }
-        else
-        {
-            displayText.text = string.Empty;
-
-            lineRenderer.SetPosition(0, anchorPosition);
-            lineRenderer.SetPosition(1, anchorPosition + anchorRotation * Vector3.forward * lineMaxLength);
-        }
-
-        //TODO - Implement Restore of all objects to original state
-        if (OVRInput.GetDown(restoreObjectsAction) && processedObjects.Count > 0)
-        { 
-            foreach(var processObject in processedObjects)
-            {
-                processObject.GetComponent<MeshRenderer>().enabled = true;
-                processObject.SetActive(true);
-            }
-            processedObjects.Clear();
         }
     }
 
-    private void AddProcessedObject(GameObject objectHit)
+    // Update the display text with the classification labels of the hit object
+    private void UpdateDisplayText(GameObject objectHit)
     {
-        if (!processedObjects.Contains(objectHit))
+        OVRSemanticClassification classification = objectHit?.GetComponentInParent<OVRSemanticClassification>();
+        displayText.text = classification != null && classification.Labels?.Count > 0 ? classification.Labels[0] : string.Empty;
+    }
+
+    // Update the positions of the line renderer
+    private void UpdateLineRendererPositions(Vector3 start, Vector3 end)
+    {
+        lineRenderer.SetPosition(0, start);
+        lineRenderer.SetPosition(1, end);
+    }
+
+    // Try to spawn an object based on the hit object and hit information
+    private void TrySpawnObject(GameObject objectHit, RaycastHit hit)
+    {
+        // Get the semantic classification of the hit object
+        OVRSemanticClassification classification = objectHit?.GetComponentInParent<OVRSemanticClassification>();
+
+        // If the spawnable prefab is a wall and the hit object is classified as a wall face, try to spawn something
+        if (spawnablePrefab.CompareTag("Wall") && classification != null && classification.Contains(OVRSceneManager.Classification.WallFace))
         {
-            processedObjects.Add(objectHit);
+            SpawnSomething(hit);
+        }
+        // If the spawnable prefab is a floor and the hit object is classified as a floor, try to spawn something
+        else if (spawnablePrefab.CompareTag("Floor") && classification != null && classification.Contains(OVRSceneManager.Classification.Floor))
+        {
+            SpawnSomething(hit);
         }
     }
 
-    void SpawnSomething(RaycastHit hit)
-{
-
-    if (spawnedObject != null)
+    // Coroutine to wait for the second raycast
+    IEnumerator WaitForSecondRaycast()
     {
-        Destroy(spawnedObject);
+        // Wait for 10 seconds
+        yield return new WaitForSeconds(10);
+
+        // If the second raycast didn't happen, spawn the prefab at the first point
+        if (firstPoint != null)
+        {
+            SpawnPrefab(firstPoint.Value);
+            firstPoint = null;
+        }
     }
 
-    if (spawnablePrefab.CompareTag("Wall")){
-        // Calculate rotation based on the hit normal
-        Quaternion rotation = Quaternion.LookRotation(hit.normal, Vector3.up) * Quaternion.Euler(0, 180, 0);
+    // Position and scale the object between two points
+    void PositionAndScaleObject(Vector3 point1, Vector3 point2)
+    {
+        // Destroy the existing spawned object before creating a new one
+        if (spawnedObject != null)
+        {
+            Destroy(spawnedObject);
+        }
 
-        // Instantiate prefab with adjusted rotation
-        spawnedObject = Instantiate(spawnablePrefab, hit.point, rotation);
+        // Calculate the position, rotation, and scale
+        Vector3 position = (point1 + point2) / 2;
+        Quaternion rotation = Quaternion.LookRotation(point2 - point1);
+        Vector3 scale = new Vector3(1, 1, (point2 - point1).magnitude);
+
+        // Spawn the prefab and apply the position, rotation, and scale
+        spawnedObject = SpawnPrefab(position);
+        spawnedObject.transform.rotation = rotation;
+        spawnedObject.transform.localScale = scale;
     }
-    else {
-        // TODO: Instantiate prefab on the floor
-        spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
+
+    // Spawn a prefab at a given position
+    GameObject SpawnPrefab(Vector3 position)
+    {
+        // Instantiate the prefab at the given position
+        GameObject spawnedPrefab = Instantiate(prefabToSpawn, position, Quaternion.identity);
+        return spawnedPrefab;
     }
-
-    // Old implementation to be removed
-    // spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
-
-
-    // Assuming you want to keep track of spawned objects, you can add it to the processedObjects list
-    AddProcessedObject(spawnedObject);
-}
 }
