@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4421312311126752936}
   m_Layer: 0
-  m_Name: SoccerFieldPrefab
+  m_Name: SplField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

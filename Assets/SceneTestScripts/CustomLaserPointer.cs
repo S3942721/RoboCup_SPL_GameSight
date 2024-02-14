@@ -75,11 +75,13 @@ public class CustomLaserPointer : MonoBehaviour
 
             if (spawnablePrefab.CompareTag("Wall") && classification != null && classification.Contains(OVRSceneManager.Classification.WallFace)){
                 if(OVRInput.GetDown(spawnObject)){
+                    Debug.Log("LASER:Hit a wall!");
                     SpawnSomething(hit);
                 }
             }
             else if (spawnablePrefab.CompareTag("Floor") && classification != null && classification.Contains(OVRSceneManager.Classification.Floor)){
                 if(OVRInput.GetDown(spawnObject)){
+                    Debug.Log("LASER:Hit a floor!");
                     SpawnSomething(hit);
                 }
             }
@@ -147,10 +149,12 @@ public class CustomLaserPointer : MonoBehaviour
         Quaternion rotation = Quaternion.LookRotation(hit.normal, Vector3.up) * Quaternion.Euler(0, 180, 0);
 
         // Instantiate prefab with adjusted rotation
+        Debug.Log("LASER:Inataniate" + spawnablePrefab.ToString());
         spawnedObject = Instantiate(spawnablePrefab, hit.point, rotation);
     }
     else {
         // TODO: Instantiate prefab on the floor
+        Debug.Log("LASER:Inataniate" + spawnablePrefab.ToString());
         spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
     }
 

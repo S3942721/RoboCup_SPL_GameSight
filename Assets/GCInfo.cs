@@ -71,7 +71,7 @@ public class GCInfo : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Start");
+        Debug.Log("GCINFO:Start");
 
         // Dynamically find and assign TMP_Text objects
         try {
@@ -84,7 +84,7 @@ public class GCInfo : MonoBehaviour
             player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
             rgrtInfo = GameObject.Find("RGRT").GetComponent<TMP_Text>();
         } catch {
-            Debug.Log("Scoredboard not present");
+            Debug.Log("GCINFO:Scoredboard not present");
         }
 
         try {
@@ -104,7 +104,7 @@ public class GCInfo : MonoBehaviour
             team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
             team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
         } catch {
-            Debug.Log("Players not present");
+            Debug.Log("GCINFO:Players not present");
         }
 
 
@@ -113,7 +113,7 @@ public class GCInfo : MonoBehaviour
         forwardedStatusClient = new UdpClient(forwardedStatusPort);
         IPEndPoint remoteEndPoint = new IPEndPoint(targetIpAddress, controlPort);
         byte[] receivedData = controlClient.Receive(ref remoteEndPoint);
-        Debug.Log(remoteEndPoint.Address.ToString());
+        Debug.Log("GCINFO:" + remoteEndPoint.Address.ToString());
         monitorRequestClient = new UdpClient();
         byte[] packet = Encoding.ASCII.GetBytes("RGTr\0");
         monitorRequestClient.Send(packet, packet.Length, new IPEndPoint(remoteEndPoint.Address, monitorPort));
@@ -121,7 +121,7 @@ public class GCInfo : MonoBehaviour
             _title.text = "Monitor request sent.";
         }
         else {
-            Debug.Log("Monitor request sent.");
+            Debug.Log("GCINFO:Monitor request sent.");
         }
         monitorRequestClient.Close();
         GameObject firstTeamLogoObject = GameObject.Find("FirstTeamLogo");
@@ -131,7 +131,7 @@ public class GCInfo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GameObject with the specified name not found.");
+            Debug.LogError("GCINFO:GameObject with the specified name not found.");
         }
 
         GameObject secondTeamLogoObject = GameObject.Find("SecondTeamLogo");
@@ -141,7 +141,7 @@ public class GCInfo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GameObject with the specified name not found.");
+            Debug.LogError("GCINFO:GameObject with the specified name not found.");
         }
 
         // Handle RGTr asynchronously
@@ -164,7 +164,7 @@ public class GCInfo : MonoBehaviour
                     team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
                     timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
                 } catch {
-                    Debug.Log("Scoreboard not present");
+                    Debug.Log("GCINFO:Scoreboard not present");
                 }
             }
 
@@ -182,7 +182,7 @@ public class GCInfo : MonoBehaviour
             }
             else
             {
-                Debug.LogError("LogoController component not found on the GameObject.");
+                Debug.LogError("GCINFO:LogoController component not found on the GameObject.");
             }
             
 
@@ -192,13 +192,42 @@ public class GCInfo : MonoBehaviour
             }
             else
             {
-                Debug.LogError("LogoController component not found on the GameObject.");
+                Debug.LogError("GCINFO:LogoController component not found on the GameObject.");
             }
             
             if (team0ScoreText != null){
                 UpdateScores();
                 UpdateTimer();
             }
+
+            try {
+                 // Dynamically find and assign player GameObjects
+                player0_1 = GameObject.Find("Player0-1");
+                Transform player0_1Transform = player0_1.transform;
+                player0_1Transform.position = new Vector3(-2.7f, 0.25f, -1.74f);
+
+                // Dynamically find and assign player GameObjects
+                player0_2 = GameObject.Find("Player0-2");
+                Transform player0_2Transform = player0_2.transform;
+                player0_2Transform.position = new Vector3(-2.7f, 0.25f, 1.74f);
+
+                // Dynamically find and assign player GameObjects
+                player1_1 = GameObject.Find("Player1-1");
+                Transform player1_1Transform = player1_1.transform;
+                player1_1Transform.position = new Vector3(2.7f, 0.25f, -1.74f);
+
+                // Dynamically find and assign player GameObjects
+                player1_2 = GameObject.Find("Player1-2");
+                Transform player1_2Transform = player1_2.transform;
+                player1_2Transform.position = new Vector3(2.7f, 0.25f, 1.74f);
+
+            }
+            catch {
+                Debug.Log("GCINFO:Players not present");
+            }
+
+            
+
             updateReady = false;
         }
 
@@ -224,13 +253,13 @@ public class GCInfo : MonoBehaviour
                     team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
                     team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
                 } catch {
-                    Debug.Log("Players not present");
+                    Debug.Log("GCINFO:Players not present");
                 }
             }
 
             if (player0_1 != null && gameControlReturnData != null)
             {
-                Debug.Log("Moving players based on gameControlReturnData ");
+                Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
                 int playerIndex = gameControlReturnData.playerNum - 1;
                 if (gameControlReturnData.teamNumValid) {
@@ -242,7 +271,7 @@ public class GCInfo : MonoBehaviour
                     //     player1_4Text.text = gameControlReturnData.pose[0].ToString() + "," + gameControlReturnData.pose[1].ToString();
                     // }
 
-                    Debug.Log("PLayer index:" + playerIndex);
+                    Debug.Log("GCINFO:PLayer index:" + playerIndex);
                     GameObject currentPlayer;
                     if (gameControlReturnData.teamNum == 0){
                         currentPlayer = team0Players[playerIndex];
@@ -251,7 +280,7 @@ public class GCInfo : MonoBehaviour
                         currentPlayer = team1Players[playerIndex];
                     }
                     
-                    Debug.Log(currentPlayer);
+                    Debug.Log("GCINFO:"+currentPlayer);
 
                     if (currentPlayer != null)
                     {
@@ -280,7 +309,7 @@ public class GCInfo : MonoBehaviour
                     }
                 }
                 else {
-                    Debug.Log("Not valid playernumber");
+                    Debug.Log("GCINFO:Not valid playernumber");
                     // Debug.Log("Moving Team0 players based randomly ");
                     // foreach (GameObject player in team0Players)
                     // {
@@ -415,7 +444,7 @@ public class GCInfo : MonoBehaviour
         }
         catch (Exception err)
         {
-            Debug.LogError("Caught Exception during ReceiveMessages");
+            Debug.LogError("GCINFO:Caught Exception during ReceiveMessages");
             Debug.LogError(err.ToString());
             return null;
         }
@@ -432,7 +461,7 @@ public class GCInfo : MonoBehaviour
             int byteArrayLength = receivedMessage.Length;
             string decodedMessage = Encoding.ASCII.GetString(receivedData, 5, byteArrayLength - 5);
             // Console.WriteLine($"{receivedHeaderMagic} WOW got a RGrt: {receivedMessage} Extracted: {decodedMessage}");
-            Console.WriteLine("====> Got some Data");
+            Console.WriteLine("GCINFO:====> Got some Data");
             GameControlReturnData data = new GameControlReturnData();
 
             using (MemoryStream memoryStream = new MemoryStream(receivedData))
@@ -441,7 +470,7 @@ public class GCInfo : MonoBehaviour
                 {
                     return data;
                 }
-                Debug.LogError("====> Failed to parse memory stream");
+                Debug.LogError("GCINFO:====> Failed to parse memory stream");
                 return null;
             }
         }
@@ -453,7 +482,7 @@ public class GCInfo : MonoBehaviour
     }
     static string GetTeamName(byte teamNumber)
     {
-        Console.WriteLine("getTeamName");
+        Console.WriteLine("GCINFO:getTeamName");
 
         string[] teamNames = Teams.GetNames(true);
 
@@ -488,12 +517,12 @@ public class GCInfo : MonoBehaviour
             }
             else
             {
-                Debug.LogError("gameControlData.team is null or has insufficient length.");
+                Debug.LogError("GCINFO:gameControlData.team is null or has insufficient length.");
             }
         }
         else
         {
-            Debug.LogError("gameControlData is null.");
+            Debug.LogError("GCINFO:gameControlData is null.");
         }
     }
 
@@ -511,7 +540,7 @@ public class GCInfo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("gameControlData is null.");
+            Debug.LogError("GCINFO:gameControlData is null.");
         }
     }
 }
