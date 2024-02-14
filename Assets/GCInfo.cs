@@ -69,8 +69,44 @@ public class GCInfo : MonoBehaviour
     LogoController firstTeamLogoController;
     LogoController secondTeamLogoController;
 
+    int player0_1_move_index = 0;
+    int player0_2_move_index = 0;
+    int player1_1_move_index = 0;
+    int player1_2_move_index = 0;
+
+    public float moveSpeed = 0.01f; 
+
+    
+
+    // Create arrays and interpolate positions
+    Vector3[] vectorArray1;
+    Vector3[] vectorArray2;
+    Vector3[] vectorArray3;
+    Vector3[] vectorArray4;     
+
     void Start()
     {
+        // Define the starting and ending points for each array
+    Vector3 start1 = new Vector3(-2.7f, 0.25f, -1.74f);
+    Vector3 end1 = new Vector3(-2.7f, 0.25f, 1.74f);
+
+    Vector3 start2 = new Vector3(-2.7f, 0.25f, 1.74f);
+    Vector3 end2 = new Vector3(2.7f, 0.25f, -1.74f);
+
+    Vector3 start3 = new Vector3(2.7f, 0.25f, -1.74f);
+    Vector3 end3 = new Vector3(2.7f, 0.25f, 1.74f);
+
+    Vector3 start4 = new Vector3(2.7f, 0.25f, 1.74f);
+    Vector3 end4 = new Vector3(-2.7f, 0.25f, -1.74f);
+
+    vectorArray1 = CreateInterpolatedArray(start1, end1, 10);
+    vectorArray2 = CreateInterpolatedArray(start2, end2, 10);
+    vectorArray3 = CreateInterpolatedArray(start3, end3, 10);
+    vectorArray4 = CreateInterpolatedArray(start4, end4, 10);   
+
+
+
+
         Debug.Log("GCINFO:Start");
 
         // Dynamically find and assign TMP_Text objects
@@ -200,31 +236,34 @@ public class GCInfo : MonoBehaviour
                 UpdateTimer();
             }
 
-            try {
-                 // Dynamically find and assign player GameObjects
-                player0_1 = GameObject.Find("Player0-1");
-                Transform player0_1Transform = player0_1.transform;
-                player0_1Transform.position = new Vector3(-2.7f, 0.25f, -1.74f);
 
-                // Dynamically find and assign player GameObjects
-                player0_2 = GameObject.Find("Player0-2");
-                Transform player0_2Transform = player0_2.transform;
-                player0_2Transform.position = new Vector3(-2.7f, 0.25f, 1.74f);
+            // // THIS IS FOR DEBUG ONLY
+            // // Dynamically find and assign player GameObjects
+            // player0_1 = GameObject.Find("Player0-1");
+            // // player0_1_move_index = MovePlayer(player0_1, player0_1_move_index);
+            // Transform player0_1Transform = player0_1.transform;
+            // player0_1Transform.localPosition = new Vector3(-2.7f, 0.25f, -1.74f);
 
-                // Dynamically find and assign player GameObjects
-                player1_1 = GameObject.Find("Player1-1");
-                Transform player1_1Transform = player1_1.transform;
-                player1_1Transform.position = new Vector3(2.7f, 0.25f, -1.74f);
+            // // Dynamically find and assign player GameObjects
+            // player0_2 = GameObject.Find("Player0-2");
+            // // player0_2_move_index = MovePlayer(player0_2, player0_2_move_index);
+            // Transform player0_2Transform = player0_2.transform;
+            // player0_2Transform.localPosition = new Vector3(-2.7f, 0.25f, 1.74f);
 
-                // Dynamically find and assign player GameObjects
-                player1_2 = GameObject.Find("Player1-2");
-                Transform player1_2Transform = player1_2.transform;
-                player1_2Transform.position = new Vector3(2.7f, 0.25f, 1.74f);
+            // // Dynamically find and assign player GameObjects
+            // player1_1 = GameObject.Find("Player1-1");
+            // // player1_1_move_index = MovePlayer(player1_1, player1_1_move_index);
+            // Transform player1_1Transform = player1_1.transform;
+            // player1_1Transform.localPosition = new Vector3(2.7f, 0.25f, -1.74f);
 
-            }
-            catch {
-                Debug.Log("GCINFO:Players not present");
-            }
+            // // Dynamically find and assign player GameObjects
+            // player1_2 = GameObject.Find("Player1-2");
+            // // player1_2_move_index = MovePlayer(player1_2, player1_2_move_index);
+            // Transform player1_2Transform = player1_2.transform;
+            // player1_2Transform.localPosition = new Vector3(2.7f, 0.25f, 1.74f);
+
+
+            
 
             
 
@@ -291,12 +330,16 @@ public class GCInfo : MonoBehaviour
                         if (gameControlReturnData.poseValid)
                         {
                             if (playerIndex == 2){
-                                player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+
+                                // player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+                                Debug.Log("Player1_3 location: " + gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000);
                             }
                             else if (playerIndex == 3){
-                                player1_4Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+                                // player1_4Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
+                                Debug.Log("Player1_4 location: " + gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000);
                             }
-                            playerTransform.position = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
+
+                            playerTransform.localPosition = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
                             // GameObject fieldObject = GameObject.Find("Field"); 
                             // if (fieldObject != null) {
                             //     Transform fieldTransform = fieldObject.transform;
@@ -543,5 +586,43 @@ public class GCInfo : MonoBehaviour
             Debug.LogError("GCINFO:gameControlData is null.");
         }
     }
+
+    // Function to create an array of interpolated Vector3 positions between start and end
+    Vector3[] CreateInterpolatedArray(Vector3 start, Vector3 end, int count)
+    {
+        Vector3[] result = new Vector3[count];
+
+        for (int i = 0; i < count; i++)
+        {
+            float t = i / (float)(count - 1); // Interpolation parameter between 0 and 1
+            result[i] = Vector3.Lerp(start, end, t);
+        }
+
+        return result;
+    }
+
+    // Function to move the player along vectorArray1
+    int MovePlayer(GameObject player, int index)
+    {
+        int currentPositionIndex = index;
+        if (currentPositionIndex < vectorArray1.Length)
+        {
+            // Move towards the current position in vectorArray1
+            player.transform.position = Vector3.MoveTowards(player.transform.position, vectorArray1[currentPositionIndex], moveSpeed * Time.deltaTime);
+
+            // Check if the player has reached the current position
+            if (Vector3.Distance(player.transform.position, vectorArray1[currentPositionIndex]) < 0.01f)
+            {
+                currentPositionIndex++; // Move to the next position
+            }
+        }
+        else
+        {
+            // All positions reached, reset the index or perform any other necessary actions
+            currentPositionIndex = 0;
+        }
+        return currentPositionIndex;
+    }
+
 }
 
