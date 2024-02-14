@@ -27,7 +27,7 @@ public class CustomLaserPointer : MonoBehaviour
     GameObject spawnablePrefab;
 
     GameObject spawnedObject;
-    
+
     [Header("Line Render Settings")]
     [SerializeField]
     private float lineWidth = 0.01f;
@@ -57,10 +57,9 @@ public class CustomLaserPointer : MonoBehaviour
         {
             GameObject objectHit = hit.transform.gameObject;
 
-            //TODO - Implement OVR Semantic Classification Display
             OVRSemanticClassification classification = objectHit?.GetComponentInParent<OVRSemanticClassification>();
 
-            if(classification != null && classification.Labels?.Count > 0)
+            if (classification != null && classification.Labels?.Count > 0)
             {
                 displayText.text = classification.Labels[0];
             }
@@ -73,40 +72,22 @@ public class CustomLaserPointer : MonoBehaviour
             lineRenderer.SetPosition(0, anchorPosition);
             lineRenderer.SetPosition(1, hit.point);
 
-            if (spawnablePrefab.CompareTag("Wall") && classification != null && classification.Contains(OVRSceneManager.Classification.WallFace)){
-                if(OVRInput.GetDown(spawnObject)){
+            if (spawnablePrefab.CompareTag("Wall") && classification != null && classification.Contains(OVRSceneManager.Classification.WallFace))
+            {
+                if (OVRInput.GetDown(spawnObject))
+                {
                     Debug.Log("LASER:Hit a wall!");
                     SpawnSomething(hit);
                 }
             }
-            else if (spawnablePrefab.CompareTag("Floor") && classification != null && classification.Contains(OVRSceneManager.Classification.Floor)){
-                if(OVRInput.GetDown(spawnObject)){
+            else if (spawnablePrefab.CompareTag("Floor") && classification != null && classification.Contains(OVRSceneManager.Classification.Floor))
+            {
+                if (OVRInput.GetDown(spawnObject))
+                {
                     Debug.Log("LASER:Hit a floor!");
                     SpawnSomething(hit);
                 }
             }
-
-
-            // //TODO - Implement Semantic Objects (GameObject Toggle and Mesh Renderer Toggle)
-            // if (classification != null && (classification.Contains(OVRSceneManager.Classification.WallFace) || classification.Contains(OVRSceneManager.Classification.Floor)))
-            // {
-            //     // toggle visibility completely
-            //     if (OVRInput.GetDown(objectsToggleAction))
-            //     {
-            //         objectHit.SetActive(false);
-            //         AddProcessedObject(objectHit);
-            //     }
-            //     // toggle just mesh mesh renderer and collider will still be active
-            //     else if (OVRInput.GetDown(meshRenderToggleAction))
-            //     {
-            //         objectHit.GetComponent<MeshRenderer>().enabled = false;
-            //         AddProcessedObject(objectHit);
-            //     }
-            //     else if(OVRInput.GetDown(spawnObject)){
-            //         SpawnSomething(hit.point);
-            //     }
-
-            // }
         }
         else
         {
@@ -116,10 +97,9 @@ public class CustomLaserPointer : MonoBehaviour
             lineRenderer.SetPosition(1, anchorPosition + anchorRotation * Vector3.forward * lineMaxLength);
         }
 
-        //TODO - Implement Restore of all objects to original state
         if (OVRInput.GetDown(restoreObjectsAction) && processedObjects.Count > 0)
-        { 
-            foreach(var processObject in processedObjects)
+        {
+            foreach (var processObject in processedObjects)
             {
                 processObject.GetComponent<MeshRenderer>().enabled = true;
                 processObject.SetActive(true);
@@ -137,32 +117,29 @@ public class CustomLaserPointer : MonoBehaviour
     }
 
     void SpawnSomething(RaycastHit hit)
-{
-
-    if (spawnedObject != null)
     {
-        Destroy(spawnedObject);
+
+        if (spawnedObject != null)
+        {
+            Destroy(spawnedObject);
+        }
+
+        if (spawnablePrefab.CompareTag("Wall"))
+        {
+            // Calculate rotation based on the hit normal
+            Quaternion rotation = Quaternion.LookRotation(hit.normal, Vector3.up) * Quaternion.Euler(0, 180, 0);
+
+            // Instantiate prefab with adjusted rotation
+            Debug.Log("LASER:Instantiate" + spawnablePrefab.ToString());
+            spawnedObject = Instantiate(spawnablePrefab, hit.point, rotation);
+        }
+        else
+        {
+            Debug.Log("LASER:Instantiate" + spawnablePrefab.ToString());
+            spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
+        }
+
+        // Assuming you want to keep track of spawned objects, you can add it to the processedObjects list
+        AddProcessedObject(spawnedObject);
     }
-
-    if (spawnablePrefab.CompareTag("Wall")){
-        // Calculate rotation based on the hit normal
-        Quaternion rotation = Quaternion.LookRotation(hit.normal, Vector3.up) * Quaternion.Euler(0, 180, 0);
-
-        // Instantiate prefab with adjusted rotation
-        Debug.Log("LASER:Inataniate" + spawnablePrefab.ToString());
-        spawnedObject = Instantiate(spawnablePrefab, hit.point, rotation);
-    }
-    else {
-        // TODO: Instantiate prefab on the floor
-        Debug.Log("LASER:Inataniate" + spawnablePrefab.ToString());
-        spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
-    }
-
-    // Old implementation to be removed
-    // spawnedObject = Instantiate(spawnablePrefab, hit.point, Quaternion.identity);
-
-
-    // Assuming you want to keep track of spawned objects, you can add it to the processedObjects list
-    AddProcessedObject(spawnedObject);
-}
 }
