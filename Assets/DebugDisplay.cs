@@ -4,42 +4,58 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class DebugDisplay : MonoBehaviour
 {
-    // Use a List to store the last 5 log messages
-    private List<string> lastLogMessages = new List<string>();
-    
-    public TextMeshProUGUI display;
+
+    Dictionary<string, string> debugLogs = new Dictionary<string, string>();
+    string rightLog;
+
+    public TextMeshProUGUI leftDisplay;
+    public TextMeshProUGUI rightDisplay;
+
 
     void OnEnable()
     {
         Application.logMessageReceived += HandleLog;
+        
     }
 
+    // Update is called once per frame
     void OnDisable()
     {
         Application.logMessageReceived -= HandleLog;
     }
 
-    void HandleLog(string logString, string stackTrace, LogType type)
-    {
-        // Add the log message to the list
-        lastLogMessages.Add(logString);
+    void HandleLog(string logString, string stackTrace, LogType type){
+        if (type == LogType.Log){
 
-        // Limit the list size to 5
-        while (lastLogMessages.Count > 5)
-        {
-            lastLogMessages.RemoveAt(0); // Remove the oldest log message
+            string[] splitString = logString.Split(char.Parse(":"));
+
+            string debugKey = splitString[0];
+            string debugValue = splitString.Length > 1 ? splitString[1] : "";
+
+            if (debugLogs.ContainsKey(debugKey)){
+                debugLogs[debugKey] = debugValue;
+            }
+            else {
+                // debugLogs.Add(debugKey, debugValue);
+            }
+
+            if (debugKey == "DEBUG_DISPLAY"){
+                rightDisplay.text = debugValue;
+            }
         }
 
-        // Construct the display text from the last 5 log messages
         string displayText = "";
-        for (int i = lastLogMessages.Count - 1; i >= 0; i--)
-        {
-            displayText += lastLogMessages[i] + "\n";
+        foreach (KeyValuePair<string, string> log in debugLogs){
+            if (log.Value == ""){
+                displayText += log.Key + "\n";
+            }
+            else{
+                displayText += log.Key + ": " + log.Value + "\n";
+            }
         }
-
-        // Update the TextMeshProUGUI component
-        display.text = displayText;
+        leftDisplay.text = displayText;
     }
 }

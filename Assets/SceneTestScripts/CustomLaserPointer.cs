@@ -94,14 +94,14 @@ public class CustomLaserPointer : MonoBehaviour
                 {
                     // get second hit
                     secondHit = hit;
-                    debugText.text = "secondHit set: " + hit.ToString();
+                    // debugText.text = "secondHit set: " + hit.ToString();
                     SpawnSomething(firstHit, secondHit);
                     firstHitSet = false;
                 }
                 else
                 {
                     firstHit = hit;
-                    debugText.text = "firstHit set: " + hit.ToString();
+                    // debugText.text = "firstHit set: " + hit.ToString();
                     firstHitSet = true;
                 }
 

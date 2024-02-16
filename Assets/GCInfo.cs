@@ -107,7 +107,7 @@ public class GCInfo : MonoBehaviour
 
 
 
-        Debug.Log("GCINFO:Start");
+        Debug.Log("DEBUG_DISPLAY:Start GCInfo");
 
         // Dynamically find and assign TMP_Text objects
         try {
@@ -116,9 +116,9 @@ public class GCInfo : MonoBehaviour
             team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
             timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
 
-            player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
-            player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
-            rgrtInfo = GameObject.Find("RGRT").GetComponent<TMP_Text>();
+            // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
+            // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
+            // rgrtInfo = GameObject.Find("RGRT").GetComponent<TMP_Text>();
         } catch {
             Debug.Log("GCINFO:Scoredboard not present");
         }
@@ -273,7 +273,8 @@ public class GCInfo : MonoBehaviour
         // Debug.Log("Checking if returnUpdateReady ");
         // Debug.Log(returnUpdateReady);
         if (returnUpdateReady){
-            rgrtInfo.text = "returnUpdateReady";
+            // rgrtInfo.text = "returnUpdateReady";
+            Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
             // Debug.Log("returnUpdateReady"); 
             if (player0_1 == null){
                 try {
@@ -299,7 +300,8 @@ public class GCInfo : MonoBehaviour
             if (player0_1 != null && gameControlReturnData != null)
             {
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
-                rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
+                Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
+                // rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
                 int playerIndex = gameControlReturnData.playerNum - 1;
                 if (gameControlReturnData.teamNumValid) {
 
