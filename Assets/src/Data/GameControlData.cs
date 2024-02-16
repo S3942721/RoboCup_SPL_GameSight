@@ -190,6 +190,68 @@ namespace Data
 
             return true;
         }
+
+        public string timeToString()
+        {
+            {
+                // Debug.Log("Timer!:" + gameControlData.secsRemaining);
+                int minutes = secsRemaining / 60;
+                int seconds = Math.Abs(secsRemaining % 60);
+
+                return $"{minutes:D2}:{seconds:D2}";
+            }
+        }
+        public string getScoreBoard()
+        {
+            StringBuilder output = new StringBuilder();
+
+            string temp;
+            switch (firstHalf)
+            {
+                case C_TRUE:
+                    temp = "First Half";
+                    break;
+                case C_FALSE:
+                    temp = "Second Half";
+                    break;
+                default:
+                    temp = "undefined(" + firstHalf + ")";
+                    break;
+            }
+
+            output.AppendLine(temp);
+            output.AppendLine(timeToString());
+
+            switch (gameState)
+            {
+                case STATE_INITIAL:
+                    temp = "Initial";
+                    break;
+                case STATE_READY:
+                    temp = "Ready";
+                    break;
+                case STATE_SET:
+                    temp = "Set";
+                    break;
+                case STATE_PLAYING:
+                    temp = "Playing";
+                    break;
+                case STATE_FINISHED:
+                    temp = "Finish";
+                    break;
+                default:
+                    temp = "undefined(" + gameState + ")";
+                    break;
+            }
+            output.AppendLine(temp);
+            output.AppendLine("\n");
+
+            output.AppendLine($"{team[0].score,2} : {team[1].score,-2}");
+
+
+
+            return output.ToString();
+        }
         public override string ToString()
         {
             StringBuilder output = new StringBuilder();

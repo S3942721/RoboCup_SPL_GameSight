@@ -20,6 +20,8 @@ public class GCInfo : MonoBehaviour
     public TMP_Text team1ScoreText;
     public TMP_Text timerText;
 
+    public TMP_Text scoreboardPlate;
+
     public TMP_Text player1_3Text;
     public TMP_Text player1_4Text;
 
@@ -115,6 +117,7 @@ public class GCInfo : MonoBehaviour
             team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
             team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
             timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
+            scoreboardPlate = GameObject.Find("ScoreboardPlate").GetComponent<TMP_Text>();
 
             // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
             // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
@@ -204,11 +207,23 @@ public class GCInfo : MonoBehaviour
                 }
             }
 
+            if (scoreboardPlate == null){
+                try {
+                    scoreboardPlate = GameObject.Find("ScoreboardPlate").GetComponent<TMP_Text>();
+                } catch {
+                    Debug.Log("GCINFO:ScoreboardPlate not present");
+                }
+            }
+
             
 
             
             if (_title != null){
                 _title.text = gameControlData.ToString();
+            }
+
+            if (scoreboardPlate != null){
+                scoreboardPlate.text = gameControlData.getScoreBoard();
             }
 
             // Update the Team Logos

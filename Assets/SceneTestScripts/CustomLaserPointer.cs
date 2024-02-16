@@ -1,9 +1,19 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System;
+
+public enum DisplayModes
+{
+    Default,
+    Off,
+    Scoreboard,
+}
+
 
 public class CustomLaserPointer : MonoBehaviour
 {
+    public OVRInput.Controller m_controller;
     [SerializeField]
     private Transform controllerAnchor;
 
@@ -11,6 +21,14 @@ public class CustomLaserPointer : MonoBehaviour
     private TextMeshProUGUI displayText = null;
     [SerializeField]
     private TextMeshProUGUI debugText = null;
+
+    [SerializeField]
+    private GameObject diplayPlate;
+    [SerializeField]
+    private GameObject scoreboardPlate;
+    private DisplayModes displayMode = DisplayModes.Default;
+
+
 
     [Header("Controller Button Actions")]
     [SerializeField]
@@ -24,6 +42,8 @@ public class CustomLaserPointer : MonoBehaviour
 
     [SerializeField]
     private OVRInput.RawButton spawnObject;
+    [SerializeField]
+    private OVRInput.RawButton cycleText;
 
     [SerializeField]
     GameObject spawnablePrefab;
@@ -66,6 +86,20 @@ public class CustomLaserPointer : MonoBehaviour
 
     void Update()
     {
+        // Maybe can add this back in later to stop line renderer when controller not in hand.
+        // Currently not working 
+        // OVRInput.Hand handOfController = (m_controller == OVRInput.Controller.LTouch)
+        //     ? OVRInput.Hand.HandLeft
+        //     : OVRInput.Hand.HandRight;
+        // OVRInput.ControllerInHandState controllerInHandState = OVRInput.GetControllerIsInHandState(handOfController);
+        // if (controllerInHandState != OVRInput.ControllerInHandState.ControllerInHand)
+        //     {
+        //         lineRenderer.enabled = false;
+        //     }
+        //     else {
+        //         lineRenderer.enabled = true;
+        //     }
+
         Vector3 anchorPosition = controllerAnchor.position;
         Quaternion anchorRotation = controllerAnchor.rotation;
 
@@ -111,6 +145,15 @@ public class CustomLaserPointer : MonoBehaviour
             if (firstHitSet && spawnablePrefabGhost != null)
             {
                 UpdatePreviewPosition(firstHit, hit);
+            }
+
+            if (OVRInput.GetDown(cycleText))
+            {
+                // Cycle to the next state
+                displayMode = (DisplayModes)(((int)displayMode + 1) % Enum.GetValues(typeof(DisplayModes)).Length);
+
+                // Set the displayPlate's state based on the enum value
+                setDisplay(displayMode);
             }
 
         }
@@ -196,7 +239,8 @@ public class CustomLaserPointer : MonoBehaviour
 
         // Assuming you want to keep track of spawned objects, you can add it to the processedObjects list
         AddProcessedObject(spawnedObject);
-        if (previewObject != null){
+        if (previewObject != null)
+        {
             previewObject.SetActive(false);
         }
     }
@@ -232,6 +276,29 @@ public class CustomLaserPointer : MonoBehaviour
         previewObject.SetActive(true);
 
 
+    }
+
+    private void setDisplay(DisplayModes mode){
+        switch (mode){
+            case DisplayModes.Default:
+                if (scoreboardPlate != null){
+                    scoreboardPlate.SetActive(false);
+                }
+                if (diplayPlate != null){
+                    diplayPlate.SetActive(true);
+                }
+                break;
+            case DisplayModes.Off:
+                if (diplayPlate != null){
+                    diplayPlate.SetActive(false);
+                }
+                break;
+            case DisplayModes.Scoreboard:
+                if (scoreboardPlate != null){
+                    scoreboardPlate.SetActive(true);
+                }
+                break;
+        }
     }
 
 }
