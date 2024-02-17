@@ -25,7 +25,8 @@ public class GCInfo : MonoBehaviour
     public TMP_Text player1_3Text;
     public TMP_Text player1_4Text;
 
-    public TMP_Text rgrtInfo;
+    public TMP_Text rgrtInfoPlate;
+    public TMP_Text rgrtInfoLastTime;
 
     public GameObject player0_1;
     public GameObject player0_2;
@@ -121,7 +122,8 @@ public class GCInfo : MonoBehaviour
 
             // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
             // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
-            // rgrtInfo = GameObject.Find("RGRT").GetComponent<TMP_Text>();
+            rgrtInfoPlate = GameObject.Find("rgrtInfoPlate").GetComponent<TMP_Text>();
+            rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
         } catch {
             Debug.Log("GCINFO:Scoredboard not present");
         }
@@ -291,6 +293,10 @@ public class GCInfo : MonoBehaviour
             // rgrtInfo.text = "returnUpdateReady";
             Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
             // Debug.Log("returnUpdateReady"); 
+            if (rgrtInfoPlate == null){
+                rgrtInfoPlate = GameObject.Find("rgrtInfoPlate").GetComponent<TMP_Text>();
+                rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
+            }
             if (player0_1 == null){
                 try {
                     // Dynamically find and assign player GameObjects
@@ -314,6 +320,12 @@ public class GCInfo : MonoBehaviour
 
             if (player0_1 != null && gameControlReturnData != null)
             {
+                if (rgrtInfoLastTime != null){
+                    rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
+                }
+                if (rgrtInfoPlate != null){
+                    rgrtInfoPlate.text = gameControlReturnData.ToString();
+                }
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
                 // rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
@@ -329,7 +341,8 @@ public class GCInfo : MonoBehaviour
 
                     Debug.Log("GCINFO:PLayer index:" + playerIndex);
                     GameObject currentPlayer;
-                    if (gameControlReturnData.teamNum == 0){
+
+                    if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber){
                         currentPlayer = team0Players[playerIndex];
                     }
                     else {
