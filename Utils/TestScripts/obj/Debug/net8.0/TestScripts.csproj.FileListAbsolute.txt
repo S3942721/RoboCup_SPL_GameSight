@@ -1,0 +1,15 @@
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/bin/Debug/net8.0/TestScripts
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/bin/Debug/net8.0/TestScripts.deps.json
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/bin/Debug/net8.0/TestScripts.runtimeconfig.json
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/bin/Debug/net8.0/TestScripts.dll
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/bin/Debug/net8.0/TestScripts.pdb
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.AssemblyInfoInputs.cache
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.AssemblyInfo.cs
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.csproj.CoreCompileInputs.cache
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.sourcelink.json
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.dll
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/refint/TestScripts.dll
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.pdb
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/TestScripts.genruntimeconfig.cache
+/Users/tom/repos/RoboCup_SPL_AR_TSM_UnityProject/Utils/TestScripts/obj/Debug/net8.0/ref/TestScripts.dll

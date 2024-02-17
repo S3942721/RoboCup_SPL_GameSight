@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6682868096133441785
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3967999018986672852}
+  - component: {fileID: 3843232793037280623}
+  m_Layer: 0
+  m_Name: GenerateField
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3967999018986672852
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6682868096133441785}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.211437, y: -0.11581993, z: -0.98865014}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3843232793037280623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6682868096133441785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420b0f8381ba844c2ad2f352a727573b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fieldLength: 9
+  fieldWidth: 6
+  lineWidth: 0.05
+  penaltyMarkSize: 0.1
+  goalAreaLength: 0.6
+  goalAreaWidth: 2.2
+  penaltyAreaLength: 1.65
+  penaltyAreaWidth: 4
+  penaltyMarkDistance: 1.3
+  centerCircleDiameter: 1.5
+  borderStripWidth: 0.7
+  fieldLinesMaterial: {fileID: 2100000, guid: fdafe262de3754b83b7321bf3d17cbe6, type: 2}
+  fieldMaterial: {fileID: 2100000, guid: 0beb4e3fcedcc415f918346485fbfdb6, type: 2}

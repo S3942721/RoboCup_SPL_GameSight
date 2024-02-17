@@ -4,8 +4,19 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 0
+    path: Assets/Scenes/ScoreBoard and SpawnableField.unity
+    guid: a1609d48922997640855f2e5ed18269e
+  - enabled: 0
+    path: Assets/test.unity
+    guid: 8e176c28bdc244646b75c3f591d73aff
+  - enabled: 1
+    path: Assets/Scenes/Quest Test.unity
+    guid: bd6e4bb3393af444e948b304e363d891
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: de9f1755aaa9d6449b7dd19ecff8edec,
+      type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 744b813df90924c169af73489b8325de,
       type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 89a6d18d3df8d3e4fa917b0f9a963bc0,
