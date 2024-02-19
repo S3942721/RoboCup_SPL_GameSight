@@ -68,7 +68,7 @@ public class GCInfo : MonoBehaviour
 
     // Use a wildcard address for the target
     IPAddress targetIpAddress = IPAddress.Any;
-     // Keep track of scheduled tasks
+    // Keep track of scheduled tasks
     private List<Task> scheduledTasks = new List<Task>();
 
     // Ports for different types of messages
@@ -82,7 +82,7 @@ public class GCInfo : MonoBehaviour
     UdpClient monitorRequestClient;
     UdpClient controlClient;
     UdpClient forwardedStatusClient;
-    
+
     LogoController firstTeamLogoController;
     LogoController secondTeamLogoController;
 
@@ -91,35 +91,35 @@ public class GCInfo : MonoBehaviour
     int player1_1_move_index = 0;
     int player1_2_move_index = 0;
 
-    public float moveSpeed = 0.01f; 
+    public float moveSpeed = 0.01f;
 
-    
+
 
     // Create arrays and interpolate positions
     Vector3[] vectorArray1;
     Vector3[] vectorArray2;
     Vector3[] vectorArray3;
-    Vector3[] vectorArray4;     
+    Vector3[] vectorArray4;
 
     void Start()
     {
         // Define the starting and ending points for each array
-    Vector3 start1 = new Vector3(-2.7f, 0.25f, -1.74f);
-    Vector3 end1 = new Vector3(-2.7f, 0.25f, 1.74f);
+        Vector3 start1 = new Vector3(-2.7f, 0.25f, -1.74f);
+        Vector3 end1 = new Vector3(-2.7f, 0.25f, 1.74f);
 
-    Vector3 start2 = new Vector3(-2.7f, 0.25f, 1.74f);
-    Vector3 end2 = new Vector3(2.7f, 0.25f, -1.74f);
+        Vector3 start2 = new Vector3(-2.7f, 0.25f, 1.74f);
+        Vector3 end2 = new Vector3(2.7f, 0.25f, -1.74f);
 
-    Vector3 start3 = new Vector3(2.7f, 0.25f, -1.74f);
-    Vector3 end3 = new Vector3(2.7f, 0.25f, 1.74f);
+        Vector3 start3 = new Vector3(2.7f, 0.25f, -1.74f);
+        Vector3 end3 = new Vector3(2.7f, 0.25f, 1.74f);
 
-    Vector3 start4 = new Vector3(2.7f, 0.25f, 1.74f);
-    Vector3 end4 = new Vector3(-2.7f, 0.25f, -1.74f);
+        Vector3 start4 = new Vector3(2.7f, 0.25f, 1.74f);
+        Vector3 end4 = new Vector3(-2.7f, 0.25f, -1.74f);
 
-    vectorArray1 = CreateInterpolatedArray(start1, end1, 10);
-    vectorArray2 = CreateInterpolatedArray(start2, end2, 10);
-    vectorArray3 = CreateInterpolatedArray(start3, end3, 10);
-    vectorArray4 = CreateInterpolatedArray(start4, end4, 10);   
+        vectorArray1 = CreateInterpolatedArray(start1, end1, 10);
+        vectorArray2 = CreateInterpolatedArray(start2, end2, 10);
+        vectorArray3 = CreateInterpolatedArray(start3, end3, 10);
+        vectorArray4 = CreateInterpolatedArray(start4, end4, 10);
 
 
 
@@ -127,7 +127,8 @@ public class GCInfo : MonoBehaviour
         Debug.Log("DEBUG_DISPLAY:Start GCInfo");
 
         // Dynamically find and assign TMP_Text objects
-        try {
+        try
+        {
             _title = GameObject.Find("TitleText").GetComponent<TMP_Text>();
             team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
             team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
@@ -138,11 +139,14 @@ public class GCInfo : MonoBehaviour
             // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
             // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
             rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
-        } catch {
+        }
+        catch
+        {
             Debug.Log("GCINFO:Scoredboard not present");
         }
 
-        try {
+        try
+        {
 
             // Dynamically find and assign player GameObjects
             player0_1 = GameObject.Find("Player0-1");
@@ -158,7 +162,9 @@ public class GCInfo : MonoBehaviour
 
             team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
             team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
-        } catch {
+        }
+        catch
+        {
             Debug.Log("GCINFO:Players not present");
         }
 
@@ -172,10 +178,12 @@ public class GCInfo : MonoBehaviour
         monitorRequestClient = new UdpClient();
         byte[] packet = Encoding.ASCII.GetBytes("RGTr\0");
         monitorRequestClient.Send(packet, packet.Length, new IPEndPoint(remoteEndPoint.Address, monitorPort));
-        if (_title != null) {
+        if (_title != null)
+        {
             _title.text = "Monitor request sent.";
         }
-        else {
+        else
+        {
             Debug.Log("GCINFO:Monitor request sent.");
         }
         monitorRequestClient.Close();
@@ -210,69 +218,84 @@ public class GCInfo : MonoBehaviour
     void Update()
     {
         // Debug.Log("Update()");
-        if (updateReady){
-            if (_title == null){
-                try {
+        if (updateReady)
+        {
+            if (_title == null)
+            {
+                try
+                {
                     // Dynamically find and assign TMP_Text objects
                     _title = GameObject.Find("TitleText").GetComponent<TMP_Text>();
                     team0ScoreText = GameObject.Find("Team0ScoreText").GetComponent<TMP_Text>();
                     team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
                     timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
-                } catch {
+                }
+                catch
+                {
                     Debug.Log("GCINFO:Scoreboard not present");
                 }
             }
 
-            if (scoreboardPlate == null){
-                try {
+            if (scoreboardPlate == null)
+            {
+                try
+                {
                     scoreboardPlate = GameObject.Find("ScoreboardPlate").GetComponent<TMP_Text>();
-                } catch {
+                }
+                catch
+                {
                     Debug.Log("GCINFO:ScoreboardPlate not present");
                 }
             }
 
-            if (gcToStringPlate == null){
-                try{
+            if (gcToStringPlate == null)
+            {
+                try
+                {
                     gcToStringPlate = GameObject.Find("GCToStringPlate").GetComponent<TMP_Text>();
-                } catch {
+                }
+                catch
+                {
                     Debug.Log("GCINFO:GCToStringPlate not present");
                 }
             }
 
-            
-            if (_title != null){
+            if (firstTeamLogoController == null)
+            {
+                try {
+                    firstTeamLogoController = GameObject.Find("FirstTeamLogo").GetComponent<LogoController>();
+                    secondTeamLogoController = GameObject.Find("SecondTeamLogo").GetComponent<LogoController>();
+                } catch {
+                    Debug.Log("GCINFO:LogoControllers not present");
+                }
+            }
+
+
+            if (_title != null)
+            {
                 _title.text = gameControlData.ToString();
             }
 
-            if (scoreboardPlate != null){
+            if (scoreboardPlate != null)
+            {
                 scoreboardPlate.text = gameControlData.getScoreBoard();
             }
 
-            if (gcToStringPlate != null){
-                gcToStringPlate.text = "<align=left><mspace=.8em> " + gameControlData.ToString();
+            if (gcToStringPlate != null)
+            {
+                gcToStringPlate.text = "<align=left><mspace=.8em>" + gameControlData.ToString();
             }
 
             // Update the Team Logos
             if (firstTeamLogoController != null)
             {
                 firstTeamLogoController.SetTeamNumber(gameControlData.team[0].teamNumber);
-            }
-            else
-            {
-                Debug.LogError("GCINFO:LogoController component not found on the GameObject.");
-            }
-            
-
-            if (secondTeamLogoController != null)
-            {
                 secondTeamLogoController.SetTeamNumber(gameControlData.team[1].teamNumber);
             }
-            else
+
+
+            if (team0ScoreText != null)
             {
-                Debug.LogError("GCINFO:LogoController component not found on the GameObject.");
-            }
-            
-            if (team0ScoreText != null){
                 UpdateScores();
                 UpdateTimer();
             }
@@ -304,24 +327,28 @@ public class GCInfo : MonoBehaviour
             // player1_2Transform.localPosition = new Vector3(-1*2.7f, 0.25f, -1*1.74f);
 
 
-            
 
-            
+
+
 
             updateReady = false;
         }
 
         // Debug.Log("Checking if returnUpdateReady ");
         // Debug.Log(returnUpdateReady);
-        if (returnUpdateReady){
+        if (returnUpdateReady)
+        {
             // rgrtInfo.text = "returnUpdateReady";
             Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
             // Debug.Log("returnUpdateReady"); 
-            if (rgrtInfoLastTime == null){
+            if (rgrtInfoLastTime == null)
+            {
                 rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
             }
-            if (player0_1 == null){
-                try {
+            if (player0_1 == null)
+            {
+                try
+                {
                     // Dynamically find and assign player GameObjects
                     player0_1 = GameObject.Find("Player0-1");
                     player0_2 = GameObject.Find("Player0-2");
@@ -336,12 +363,16 @@ public class GCInfo : MonoBehaviour
 
                     team0Players = new GameObject[] { player0_1, player0_2, player0_3, player0_4, player0_5 };
                     team1Players = new GameObject[] { player1_1, player1_2, player1_3, player1_4, player1_5 };
-                } catch {
+                }
+                catch
+                {
                     Debug.Log("GCINFO:Players not present");
                 }
             }
-            if (rgrtInfoPlateP0_1 == null){
-                try {
+            if (rgrtInfoPlateP0_1 == null)
+            {
+                try
+                {
                     rgrtInfoPlateP0_1 = GameObject.Find("rgrtInfoPlateP0_1").GetComponent<TMP_Text>();
                     rgrtInfoPlateP0_2 = GameObject.Find("rgrtInfoPlateP0_2").GetComponent<TMP_Text>();
                     rgrtInfoPlateP0_3 = GameObject.Find("rgrtInfoPlateP0_3").GetComponent<TMP_Text>();
@@ -353,10 +384,12 @@ public class GCInfo : MonoBehaviour
                     rgrtInfoPlateP1_4 = GameObject.Find("rgrtInfoPlateP1_4").GetComponent<TMP_Text>();
                     rgrtInfoPlateP1_5 = GameObject.Find("rgrtInfoPlateP1_5").GetComponent<TMP_Text>();
 
-                    team0InfoPlates = new TMP_Text[] { rgrtInfoPlateP0_1, rgrtInfoPlateP0_2, rgrtInfoPlateP0_3, rgrtInfoPlateP0_4, rgrtInfoPlateP0_5};
+                    team0InfoPlates = new TMP_Text[] { rgrtInfoPlateP0_1, rgrtInfoPlateP0_2, rgrtInfoPlateP0_3, rgrtInfoPlateP0_4, rgrtInfoPlateP0_5 };
 
-                    team1InfoPlates = new TMP_Text[] { rgrtInfoPlateP1_1, rgrtInfoPlateP1_2, rgrtInfoPlateP1_3, rgrtInfoPlateP1_4, rgrtInfoPlateP1_5};
-                }catch {
+                    team1InfoPlates = new TMP_Text[] { rgrtInfoPlateP1_1, rgrtInfoPlateP1_2, rgrtInfoPlateP1_3, rgrtInfoPlateP1_4, rgrtInfoPlateP1_5 };
+                }
+                catch
+                {
                     Debug.Log("GCINFO:rgrtInfoPlates not present");
                 }
             }
@@ -364,15 +397,17 @@ public class GCInfo : MonoBehaviour
 
             if (player0_1 != null && gameControlReturnData != null)
             {
-                if (rgrtInfoLastTime != null){
+                if (rgrtInfoLastTime != null)
+                {
                     rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
                 }
-                
+
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
                 // rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
                 int playerIndex = gameControlReturnData.playerNum - 1;
-                if (gameControlReturnData.teamNumValid) {
+                if (gameControlReturnData.teamNumValid)
+                {
 
                     // if (playerIndex == 2){
                     //     player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
@@ -387,21 +422,24 @@ public class GCInfo : MonoBehaviour
 
                     int poseMultiple = 1;
 
-                    if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber){
+                    if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber)
+                    {
                         currentPlayer = team0Players[playerIndex];
                         currentPlayerPlate = team0InfoPlates[playerIndex];
                     }
-                    else {
+                    else
+                    {
                         currentPlayer = team1Players[playerIndex];
                         currentPlayerPlate = team0InfoPlates[playerIndex];
                         poseMultiple = -1;
                     }
-                    
-                    Debug.Log("GCINFO:"+currentPlayer);
 
-                    if (currentPlayerPlate != null){
+                    Debug.Log("GCINFO:" + currentPlayer);
+
+                    if (currentPlayerPlate != null)
+                    {
                         currentPlayerPlate.text = gameControlReturnData.ToString();
-                    }   
+                    }
 
                     if (currentPlayer != null)
                     {
@@ -411,17 +449,19 @@ public class GCInfo : MonoBehaviour
                         // Check if pose data is valid before updating the position
                         if (gameControlReturnData.poseValid)
                         {
-                            if (playerIndex == 2){
+                            if (playerIndex == 2)
+                            {
 
                                 // player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
-                                Debug.Log("Player1_3 location: " + gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000);
+                                Debug.Log("Player1_3 location: " + gameControlReturnData.pose[0] / 1000 + "," + gameControlReturnData.pose[1] / 1000);
                             }
-                            else if (playerIndex == 3){
+                            else if (playerIndex == 3)
+                            {
                                 // player1_4Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
-                                Debug.Log("Player1_4 location: " + gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000);
+                                Debug.Log("Player1_4 location: " + gameControlReturnData.pose[0] / 1000 + "," + gameControlReturnData.pose[1] / 1000);
                             }
 
-                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0]/1000, 0.25f, poseMultiple * gameControlReturnData.pose[1]/1000);
+                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0] / 1000, 0.25f, poseMultiple * gameControlReturnData.pose[1] / 1000);
                             // GameObject fieldObject = GameObject.Find("Field"); 
                             // if (fieldObject != null) {
                             //     Transform fieldTransform = fieldObject.transform;
@@ -433,7 +473,8 @@ public class GCInfo : MonoBehaviour
                         }
                     }
                 }
-                else {
+                else
+                {
                     Debug.Log("GCINFO:Not valid playernumber");
                     // Debug.Log("Moving Team0 players based randomly ");
                     // foreach (GameObject player in team0Players)
@@ -453,7 +494,7 @@ public class GCInfo : MonoBehaviour
                     //     }
                     // }
                 }
-            returnUpdateReady = false;
+                returnUpdateReady = false;
             }
         }
     }
@@ -461,9 +502,10 @@ public class GCInfo : MonoBehaviour
 
     async Task HandleRGTrPacket(string headerMagic)
     {
-        while(receivePackets){
-        if (controlClient != null)
-            {   
+        while (receivePackets)
+        {
+            if (controlClient != null)
+            {
                 GameControlData data = await Task.Run(() => ReceiveMessages(controlClient, targetIpAddress, controlPort, headerMagic, "Regular Control"));
                 if (data != null)
                 {
@@ -472,7 +514,7 @@ public class GCInfo : MonoBehaviour
                     // Debug.Log($"Received {headerMagic}: {gameControlData.ToString()}");
                     updateReady = true;
 
-                    
+
                 }
             }
         }
@@ -480,8 +522,9 @@ public class GCInfo : MonoBehaviour
 
     async Task HandleRGrtPacket(string headerMagic)
     {
-        while(receivePackets){
-        // Debug.Log("Start HandleRGrtPacket");
+        while (receivePackets)
+        {
+            // Debug.Log("Start HandleRGrtPacket");
             if (forwardedStatusClient != null)
             {
                 // Debug.Log("====> await Task.Run");
@@ -498,7 +541,7 @@ public class GCInfo : MonoBehaviour
     }
 
     void OnDestroy()
-    {   
+    {
         receivePackets = false;
         // Debug.Log("OnDestroy Called!");
         // // Wait for all scheduled tasks to complete
