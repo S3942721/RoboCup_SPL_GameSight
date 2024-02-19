@@ -271,13 +271,13 @@ public class GCInfo : MonoBehaviour
             // player1_1 = GameObject.Find("Player1-1");
             // // player1_1_move_index = MovePlayer(player1_1, player1_1_move_index);
             // Transform player1_1Transform = player1_1.transform;
-            // player1_1Transform.localPosition = new Vector3(2.7f, 0.25f, -1.74f);
+            // player1_1Transform.localPosition = new Vector3(-1*2.7f, 0.25f, -1*-1.74f);
 
             // // Dynamically find and assign player GameObjects
             // player1_2 = GameObject.Find("Player1-2");
             // // player1_2_move_index = MovePlayer(player1_2, player1_2_move_index);
             // Transform player1_2Transform = player1_2.transform;
-            // player1_2Transform.localPosition = new Vector3(2.7f, 0.25f, 1.74f);
+            // player1_2Transform.localPosition = new Vector3(-1*2.7f, 0.25f, -1*1.74f);
 
 
             
@@ -342,11 +342,14 @@ public class GCInfo : MonoBehaviour
                     Debug.Log("GCINFO:PLayer index:" + playerIndex);
                     GameObject currentPlayer;
 
+                    int poseMultiple = 1;
+
                     if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber){
                         currentPlayer = team0Players[playerIndex];
                     }
                     else {
                         currentPlayer = team1Players[playerIndex];
+                        poseMultiple = -1;
                     }
                     
                     Debug.Log("GCINFO:"+currentPlayer);
@@ -369,7 +372,7 @@ public class GCInfo : MonoBehaviour
                                 Debug.Log("Player1_4 location: " + gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000);
                             }
 
-                            playerTransform.localPosition = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
+                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0]/1000, 0.25f, poseMultiple * gameControlReturnData.pose[1]/1000);
                             // GameObject fieldObject = GameObject.Find("Field"); 
                             // if (fieldObject != null) {
                             //     Transform fieldTransform = fieldObject.transform;
