@@ -248,8 +248,8 @@ public class GCInfo : MonoBehaviour
                 scoreboardPlate.text = gameControlData.getScoreBoard();
             }
 
-            if (scoreboardPlate != null){
-                gcToStringPlate.text = gameControlData.ToString();
+            if (gcToStringPlate != null){
+                gcToStringPlate.text = "<align=left><mspace=.8em> " + gameControlData.ToString();
             }
 
             // Update the Team Logos

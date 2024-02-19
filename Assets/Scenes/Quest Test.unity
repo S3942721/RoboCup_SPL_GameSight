@@ -403,13 +403,13 @@ PrefabInstance:
     - target: {fileID: 7947486331839759784, guid: 3e5d2960412a042a1b732eda3e3ec643,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8094878179076522584, guid: 3e5d2960412a042a1b732eda3e3ec643,
         type: 3}
       propertyPath: m_text
-      value: "<align=\"left\"><mspace=.8em>\n             Header: RGme\n           
-        Version: 15\n      Packet Number: 0\n   Players per Team: 6\n   competitionPhase:
+      value: "<align=left><mspace=.8em>\n             Header: RGme\n            Version:
+        15\n      Packet Number: 0\n   Players per Team: 6\n   competitionPhase:
         round robin\n    competitionType: normal\n          gamePhase: normal\n         
         gameState: initial\n            setPlay: none\n          firstHalf: true\n       
         kickingTeam: 0\n      secsRemaining: 300\n      secondaryTime: 0"
