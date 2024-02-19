@@ -3,13 +3,26 @@ using TMPro;
 using UnityEngine;
 using System;
 
-public enum DisplayModes
+public enum LeftDisplayModes
 {
     Default,
     Off,
-    Scoreboard,
+    Scoreboard
 }
 
+public enum RightDisplayModes
+{
+    Default,
+    Off,
+    Team0,
+    Team1
+}
+
+public enum DisplayModes
+{
+    Left,
+    Right
+}
 
 public class CustomLaserPointer : MonoBehaviour
 {
@@ -23,22 +36,9 @@ public class CustomLaserPointer : MonoBehaviour
     private TextMeshProUGUI debugText = null;
 
     [SerializeField]
-    private GameObject diplayPlate;
-    [SerializeField]
-    private GameObject scoreboardPlate;
-    private DisplayModes displayMode = DisplayModes.Default;
-
-
+    private List<GameObject> displayObjects = new List<GameObject>();
 
     [Header("Controller Button Actions")]
-    [SerializeField]
-    private OVRInput.RawButton meshRenderToggleAction;
-
-    [SerializeField]
-    private OVRInput.RawButton objectsToggleAction;
-
-    [SerializeField]
-    private OVRInput.RawButton restoreObjectsAction;
 
     [SerializeField]
     private OVRInput.RawButton spawnObject;
@@ -50,7 +50,6 @@ public class CustomLaserPointer : MonoBehaviour
 
     [SerializeField]
     GameObject spawnablePrefabGhost;
-
 
     private GameObject previewObject;
 
@@ -67,8 +66,6 @@ public class CustomLaserPointer : MonoBehaviour
     private RaycastHit secondHit;
     private bool firstHitSet = false;
     private LineRenderer lineRenderer;
-
-    private List<GameObject> processedObjects = new List<GameObject>();
 
     private void Awake()
     {
@@ -149,11 +146,8 @@ public class CustomLaserPointer : MonoBehaviour
 
             if (OVRInput.GetDown(cycleText))
             {
-                // Cycle to the next state
-                displayMode = (DisplayModes)(((int)displayMode + 1) % Enum.GetValues(typeof(DisplayModes)).Length);
+                CycleDisplay();
 
-                // Set the displayPlate's state based on the enum value
-                setDisplay(displayMode);
             }
 
         }
@@ -163,28 +157,11 @@ public class CustomLaserPointer : MonoBehaviour
 
             lineRenderer.SetPosition(0, anchorPosition);
             lineRenderer.SetPosition(1, anchorPosition + anchorRotation * Vector3.forward * lineMaxLength);
-
-
         }
 
-        if (OVRInput.GetDown(restoreObjectsAction) && processedObjects.Count > 0)
-        {
-            foreach (var processObject in processedObjects)
-            {
-                processObject.GetComponent<MeshRenderer>().enabled = true;
-                processObject.SetActive(true);
-            }
-            processedObjects.Clear();
-        }
     }
 
-    private void AddProcessedObject(GameObject objectHit)
-    {
-        if (!processedObjects.Contains(objectHit))
-        {
-            processedObjects.Add(objectHit);
-        }
-    }
+
 
     void SpawnSomething(RaycastHit firstHit, RaycastHit secondHit)
     {
@@ -237,8 +214,6 @@ public class CustomLaserPointer : MonoBehaviour
 
         }
 
-        // Assuming you want to keep track of spawned objects, you can add it to the processedObjects list
-        AddProcessedObject(spawnedObject);
         if (previewObject != null)
         {
             previewObject.SetActive(false);
@@ -278,27 +253,16 @@ public class CustomLaserPointer : MonoBehaviour
 
     }
 
-    private void setDisplay(DisplayModes mode){
-        switch (mode){
-            case DisplayModes.Default:
-                if (scoreboardPlate != null){
-                    scoreboardPlate.SetActive(false);
-                }
-                if (diplayPlate != null){
-                    diplayPlate.SetActive(true);
-                }
-                break;
-            case DisplayModes.Off:
-                if (diplayPlate != null){
-                    diplayPlate.SetActive(false);
-                }
-                break;
-            case DisplayModes.Scoreboard:
-                if (scoreboardPlate != null){
-                    scoreboardPlate.SetActive(true);
-                }
-                break;
-        }
+    private void CycleDisplay()
+    {
+        int currentIndex = displayObjects.IndexOf(displayObjects.Find(obj => obj.activeSelf));
+
+        // Deactivate the current object
+        displayObjects[currentIndex].SetActive(false);
+
+        // Activate the next object in the list (looping back to the start if at the end)
+        int nextIndex = (currentIndex + 1) % displayObjects.Count;
+        displayObjects[nextIndex].SetActive(true);
     }
 
 }

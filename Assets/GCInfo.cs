@@ -19,8 +19,20 @@ public class GCInfo : MonoBehaviour
     public TMP_Text team0ScoreText;
     public TMP_Text team1ScoreText;
     public TMP_Text timerText;
-
     public TMP_Text scoreboardPlate;
+    public TMP_Text gcToStringPlate;
+
+    public TMP_Text rgrtInfoPlateP0_1;
+    public TMP_Text rgrtInfoPlateP0_2;
+    public TMP_Text rgrtInfoPlateP0_3;
+    public TMP_Text rgrtInfoPlateP0_4;
+    public TMP_Text rgrtInfoPlateP0_5;
+
+    public TMP_Text rgrtInfoPlateP1_1;
+    public TMP_Text rgrtInfoPlateP1_2;
+    public TMP_Text rgrtInfoPlateP1_3;
+    public TMP_Text rgrtInfoPlateP1_4;
+    public TMP_Text rgrtInfoPlateP1_5;
 
     public TMP_Text player1_3Text;
     public TMP_Text player1_4Text;
@@ -42,6 +54,8 @@ public class GCInfo : MonoBehaviour
     public GameObject[] team0Players;
     public GameObject[] team1Players;
 
+    public TMP_Text[] team0InfoPlates;
+    public TMP_Text[] team1InfoPlates;
 
 
     [SerializeField]
@@ -119,10 +133,10 @@ public class GCInfo : MonoBehaviour
             team1ScoreText = GameObject.Find("Team1ScoreText").GetComponent<TMP_Text>();
             timerText = GameObject.Find("TimerText").GetComponent<TMP_Text>();
             scoreboardPlate = GameObject.Find("ScoreboardPlate").GetComponent<TMP_Text>();
+            gcToStringPlate = GameObject.Find("GCToStringPlate").GetComponent<TMP_Text>();
 
             // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
             // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
-            rgrtInfoPlate = GameObject.Find("rgrtInfoPlate").GetComponent<TMP_Text>();
             rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
         } catch {
             Debug.Log("GCINFO:Scoredboard not present");
@@ -217,7 +231,13 @@ public class GCInfo : MonoBehaviour
                 }
             }
 
-            
+            if (gcToStringPlate == null){
+                try{
+                    gcToStringPlate = GameObject.Find("GCToStringPlate").GetComponent<TMP_Text>();
+                } catch {
+                    Debug.Log("GCINFO:GCToStringPlate not present");
+                }
+            }
 
             
             if (_title != null){
@@ -226,6 +246,10 @@ public class GCInfo : MonoBehaviour
 
             if (scoreboardPlate != null){
                 scoreboardPlate.text = gameControlData.getScoreBoard();
+            }
+
+            if (scoreboardPlate != null){
+                gcToStringPlate.text = gameControlData.ToString();
             }
 
             // Update the Team Logos
@@ -293,8 +317,7 @@ public class GCInfo : MonoBehaviour
             // rgrtInfo.text = "returnUpdateReady";
             Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
             // Debug.Log("returnUpdateReady"); 
-            if (rgrtInfoPlate == null){
-                rgrtInfoPlate = GameObject.Find("rgrtInfoPlate").GetComponent<TMP_Text>();
+            if (rgrtInfoLastTime == null){
                 rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
             }
             if (player0_1 == null){
@@ -317,15 +340,34 @@ public class GCInfo : MonoBehaviour
                     Debug.Log("GCINFO:Players not present");
                 }
             }
+            if (rgrtInfoPlateP0_1 == null){
+                try {
+                    rgrtInfoPlateP0_1 = GameObject.Find("rgrtInfoPlateP0_1").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP0_2 = GameObject.Find("rgrtInfoPlateP0_2").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP0_3 = GameObject.Find("rgrtInfoPlateP0_3").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP0_4 = GameObject.Find("rgrtInfoPlateP0_4").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP0_5 = GameObject.Find("rgrtInfoPlateP0_5").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP1_1 = GameObject.Find("rgrtInfoPlateP1_1").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP1_2 = GameObject.Find("rgrtInfoPlateP1_2").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP1_3 = GameObject.Find("rgrtInfoPlateP1_3").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP1_4 = GameObject.Find("rgrtInfoPlateP1_4").GetComponent<TMP_Text>();
+                    rgrtInfoPlateP1_5 = GameObject.Find("rgrtInfoPlateP1_5").GetComponent<TMP_Text>();
+
+                    team0InfoPlates = new TMP_Text[] { rgrtInfoPlateP0_1, rgrtInfoPlateP0_2, rgrtInfoPlateP0_3, rgrtInfoPlateP0_4, rgrtInfoPlateP0_5};
+
+                    team1InfoPlates = new TMP_Text[] { rgrtInfoPlateP1_1, rgrtInfoPlateP1_2, rgrtInfoPlateP1_3, rgrtInfoPlateP1_4, rgrtInfoPlateP1_5};
+                }catch {
+                    Debug.Log("GCINFO:rgrtInfoPlates not present");
+                }
+            }
+
 
             if (player0_1 != null && gameControlReturnData != null)
             {
                 if (rgrtInfoLastTime != null){
                     rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
                 }
-                if (rgrtInfoPlate != null){
-                    rgrtInfoPlate.text = gameControlReturnData.ToString();
-                }
+                
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
                 // rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
@@ -341,18 +383,25 @@ public class GCInfo : MonoBehaviour
 
                     Debug.Log("GCINFO:PLayer index:" + playerIndex);
                     GameObject currentPlayer;
+                    TMP_Text currentPlayerPlate;
 
                     int poseMultiple = 1;
 
                     if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber){
                         currentPlayer = team0Players[playerIndex];
+                        currentPlayerPlate = team0InfoPlates[playerIndex];
                     }
                     else {
                         currentPlayer = team1Players[playerIndex];
+                        currentPlayerPlate = team0InfoPlates[playerIndex];
                         poseMultiple = -1;
                     }
                     
                     Debug.Log("GCINFO:"+currentPlayer);
+
+                    if (currentPlayerPlate != null){
+                        currentPlayerPlate.text = gameControlReturnData.ToString();
+                    }   
 
                     if (currentPlayer != null)
                     {
