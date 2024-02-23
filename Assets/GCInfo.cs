@@ -138,7 +138,7 @@ public class GCInfo : MonoBehaviour
 
             // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
             // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
-            rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
+            // rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
         }
         catch
         {
@@ -168,6 +168,28 @@ public class GCInfo : MonoBehaviour
             Debug.Log("GCINFO:Players not present");
         }
 
+
+        try
+        {
+            rgrtInfoPlateP0_1 = GameObject.Find("rgrtInfoPlateP0_1").GetComponent<TMP_Text>();
+            rgrtInfoPlateP0_2 = GameObject.Find("rgrtInfoPlateP0_2").GetComponent<TMP_Text>();
+            rgrtInfoPlateP0_3 = GameObject.Find("rgrtInfoPlateP0_3").GetComponent<TMP_Text>();
+            rgrtInfoPlateP0_4 = GameObject.Find("rgrtInfoPlateP0_4").GetComponent<TMP_Text>();
+            rgrtInfoPlateP0_5 = GameObject.Find("rgrtInfoPlateP0_5").GetComponent<TMP_Text>();
+            rgrtInfoPlateP1_1 = GameObject.Find("rgrtInfoPlateP1_1").GetComponent<TMP_Text>();
+            rgrtInfoPlateP1_2 = GameObject.Find("rgrtInfoPlateP1_2").GetComponent<TMP_Text>();
+            rgrtInfoPlateP1_3 = GameObject.Find("rgrtInfoPlateP1_3").GetComponent<TMP_Text>();
+            rgrtInfoPlateP1_4 = GameObject.Find("rgrtInfoPlateP1_4").GetComponent<TMP_Text>();
+            rgrtInfoPlateP1_5 = GameObject.Find("rgrtInfoPlateP1_5").GetComponent<TMP_Text>();
+
+            team0InfoPlates = new TMP_Text[] { rgrtInfoPlateP0_1, rgrtInfoPlateP0_2, rgrtInfoPlateP0_3, rgrtInfoPlateP0_4, rgrtInfoPlateP0_5 };
+
+            team1InfoPlates = new TMP_Text[] { rgrtInfoPlateP1_1, rgrtInfoPlateP1_2, rgrtInfoPlateP1_3, rgrtInfoPlateP1_4, rgrtInfoPlateP1_5 };
+        }
+        catch
+        {
+            Debug.Log("GCINFO:rgrtInfoPlates not present");
+        }
 
 
         controlClient = new UdpClient(controlPort);
@@ -262,10 +284,13 @@ public class GCInfo : MonoBehaviour
 
             if (firstTeamLogoController == null)
             {
-                try {
+                try
+                {
                     firstTeamLogoController = GameObject.Find("FirstTeamLogo").GetComponent<LogoController>();
                     secondTeamLogoController = GameObject.Find("SecondTeamLogo").GetComponent<LogoController>();
-                } catch {
+                }
+                catch
+                {
                     Debug.Log("GCINFO:LogoControllers not present");
                 }
             }
@@ -341,10 +366,10 @@ public class GCInfo : MonoBehaviour
             // rgrtInfo.text = "returnUpdateReady";
             Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
             // Debug.Log("returnUpdateReady"); 
-            if (rgrtInfoLastTime == null)
-            {
-                rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
-            }
+            // if (rgrtInfoLastTime == null)
+            // {
+            //     rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
+            // }
             if (player0_1 == null)
             {
                 try
@@ -397,10 +422,10 @@ public class GCInfo : MonoBehaviour
 
             if (player0_1 != null && gameControlReturnData != null)
             {
-                if (rgrtInfoLastTime != null)
-                {
-                    rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
-                }
+                // if (rgrtInfoLastTime != null)
+                // {
+                //     rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
+                // }
 
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
