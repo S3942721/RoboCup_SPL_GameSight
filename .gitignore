@@ -74,3 +74,7 @@ crashlytics-build.properties
 # Annoying Mac Files
 .DS_Store
 iostest
+
+# Build remnants
+*BackUpThisFolder*
+*.symbols.zip
