@@ -140,6 +140,9 @@ public class CustomLaserPointer : MonoBehaviour
                     firstHit = hit;
                     // debugText.text = "firstHit set: " + hit.ToString();
                     firstHitSet = true;
+                    if (spawnedObject != null){
+                        Destroy(spawnedObject);
+                    }
                 }
 
             }
