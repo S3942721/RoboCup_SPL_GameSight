@@ -206,22 +206,21 @@ public class GCInfo : MonoBehaviour
             Debug.Log("GCINFO:Monitor request sent.");
         }
         monitorRequestClient.Close();
-        GameObject firstTeamLogoObject = GameObject.Find("FirstTeamLogo");
-        if (firstTeamLogoObject != null)
+
+        try
         {
-            firstTeamLogoController = firstTeamLogoObject.GetComponent<LogoController>();
+            firstTeamLogoController = GameObject.Find("FirstTeamLogo").GetComponent<LogoController>();
         }
-        else
+        catch
         {
             Debug.LogError("GCINFO:LogoController with the specified name not found.");
         }
 
-        GameObject secondTeamLogoObject = GameObject.Find("SecondTeamLogo");
-        if (secondTeamLogoObject != null)
+        try
         {
-            secondTeamLogoController = secondTeamLogoObject.GetComponent<LogoController>();
+            secondTeamLogoController = GameObject.Find("SecondTeamLogo").GetComponent<LogoController>();
         }
-        else
+        catch
         {
             Debug.LogError("GCINFO:LogoController with the specified name not found.");
         }
@@ -254,6 +253,7 @@ public class GCInfo : MonoBehaviour
                     Debug.Log("GCINFO:Scoreboard not present");
                 }
             }
+
 
             if (scoreboardPlate == null)
             {

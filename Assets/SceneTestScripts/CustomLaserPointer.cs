@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using System;
+using System.Collections;
 
 public enum LeftDisplayModes
 {
@@ -44,12 +45,17 @@ public class CustomLaserPointer : MonoBehaviour
     private OVRInput.RawButton spawnObject;
     [SerializeField]
     private OVRInput.RawButton cycleText;
+    [SerializeField]
+    private OVRInput.RawButton toggleGCTrueDataButton;
 
     [SerializeField]
     GameObject spawnablePrefab;
-
     [SerializeField]
     GameObject spawnablePrefabGhost;
+    [SerializeField]
+    GameObject PassiveGCInfo;
+    [SerializeField]
+    GameObject ActiveGCInfo;
 
     private GameObject previewObject;
 
@@ -148,6 +154,11 @@ public class CustomLaserPointer : MonoBehaviour
             {
                 CycleDisplay();
 
+            }
+
+            if (OVRInput.GetDown(toggleGCTrueDataButton))
+            {
+                StartCoroutine(toggleGCTrueData());
             }
 
         }
@@ -264,5 +275,22 @@ public class CustomLaserPointer : MonoBehaviour
         int nextIndex = (currentIndex + 1) % displayObjects.Count;
         displayObjects[nextIndex].SetActive(true);
     }
+
+    private IEnumerator toggleGCTrueData()
+    {
+        if (ActiveGCInfo.activeSelf)
+        {
+            ActiveGCInfo.SetActive(false);
+            yield return new WaitForSeconds(1);
+            PassiveGCInfo.SetActive(true);
+        }
+        else
+        {
+            PassiveGCInfo.SetActive(false);
+            yield return new WaitForSeconds(1);
+            ActiveGCInfo.SetActive(true);
+        }
+    }
+
 
 }
