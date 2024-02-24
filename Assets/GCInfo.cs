@@ -136,9 +136,6 @@ public class GCInfo : MonoBehaviour
             scoreboardPlate = GameObject.Find("ScoreboardPlate").GetComponent<TMP_Text>();
             gcToStringPlate = GameObject.Find("GCToStringPlate").GetComponent<TMP_Text>();
 
-            // player1_3Text = GameObject.Find("Player1-3Text").GetComponent<TMP_Text>();
-            // player1_4Text = GameObject.Find("Player1-4Text").GetComponent<TMP_Text>();
-            // rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
         }
         catch
         {
@@ -216,7 +213,7 @@ public class GCInfo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GCINFO:GameObject with the specified name not found.");
+            Debug.LogError("GCINFO:LogoController with the specified name not found.");
         }
 
         GameObject secondTeamLogoObject = GameObject.Find("SecondTeamLogo");
@@ -226,7 +223,7 @@ public class GCInfo : MonoBehaviour
         }
         else
         {
-            Debug.LogError("GCINFO:GameObject with the specified name not found.");
+            Debug.LogError("GCINFO:LogoController with the specified name not found.");
         }
 
         // Handle RGTr asynchronously
@@ -359,17 +356,10 @@ public class GCInfo : MonoBehaviour
             updateReady = false;
         }
 
-        // Debug.Log("Checking if returnUpdateReady ");
-        // Debug.Log(returnUpdateReady);
         if (returnUpdateReady)
         {
-            // rgrtInfo.text = "returnUpdateReady";
             Debug.Log("DEBUG_DISPLAY: returnUpdateReady");
-            // Debug.Log("returnUpdateReady"); 
-            // if (rgrtInfoLastTime == null)
-            // {
-            //     rgrtInfoLastTime = GameObject.Find("rgrtInfoLastTime").GetComponent<TMP_Text>();
-            // }
+
             if (player0_1 == null)
             {
                 try
@@ -422,24 +412,12 @@ public class GCInfo : MonoBehaviour
 
             if (player0_1 != null && gameControlReturnData != null)
             {
-                // if (rgrtInfoLastTime != null)
-                // {
-                //     rgrtInfoLastTime.text = Time.realtimeSinceStartup.ToString();
-                // }
 
                 Debug.Log("GCINFO:Moving players based on gameControlReturnData ");
                 Debug.Log("DEBUG_DISPLAY: returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString());
-                // rgrtInfo.text = "returnUpdateReady for player: " + gameControlReturnData.playerNum.ToString();
                 int playerIndex = gameControlReturnData.playerNum - 1;
                 if (gameControlReturnData.teamNumValid)
                 {
-
-                    // if (playerIndex == 2){
-                    //     player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
-                    // }
-                    // else if (playerIndex == 3){
-                    //     player1_4Text.text = gameControlReturnData.pose[0].ToString() + "," + gameControlReturnData.pose[1].ToString();
-                    // }
 
                     Debug.Log("GCINFO:PLayer index:" + playerIndex);
                     GameObject currentPlayer;
@@ -450,12 +428,23 @@ public class GCInfo : MonoBehaviour
                     if (gameControlReturnData.teamNum == gameControlData.team[0].teamNumber)
                     {
                         currentPlayer = team0Players[playerIndex];
-                        currentPlayerPlate = team0InfoPlates[playerIndex];
+                        try {
+                            currentPlayerPlate = team0InfoPlates[playerIndex];
+                        } catch {
+                            Debug.Log("Error setting current PlayerPlate");
+                            currentPlayerPlate = null;
+                        }
+
                     }
                     else
                     {
                         currentPlayer = team1Players[playerIndex];
-                        currentPlayerPlate = team0InfoPlates[playerIndex];
+                        try {
+                            currentPlayerPlate = team1InfoPlates[playerIndex];
+                        } catch {
+                            Debug.Log("Error setting current PlayerPlate");
+                            currentPlayerPlate = null;
+                        }
                         poseMultiple = -1;
                     }
 
@@ -474,50 +463,13 @@ public class GCInfo : MonoBehaviour
                         // Check if pose data is valid before updating the position
                         if (gameControlReturnData.poseValid)
                         {
-                            if (playerIndex == 2)
-                            {
-
-                                // player1_3Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
-                                Debug.Log("Player1_3 location: " + gameControlReturnData.pose[0] / 1000 + "," + gameControlReturnData.pose[1] / 1000);
-                            }
-                            else if (playerIndex == 3)
-                            {
-                                // player1_4Text.text = gameControlReturnData.pose[0]/1000 + "," + gameControlReturnData.pose[1]/1000;
-                                Debug.Log("Player1_4 location: " + gameControlReturnData.pose[0] / 1000 + "," + gameControlReturnData.pose[1] / 1000);
-                            }
-
-                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0] / 1000, 0.25f, poseMultiple * gameControlReturnData.pose[1] / 1000);
-                            // GameObject fieldObject = GameObject.Find("Field"); 
-                            // if (fieldObject != null) {
-                            //     Transform fieldTransform = fieldObject.transform;
-                            //     Vector3 fieldRelativePosition = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[2]/1000);
-                            //     playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
-                            // }
-                            // Assign the pose from gameControlReturnData to the player's position
-                            // playerTransform.position = new Vector3(gameControlReturnData.pose[0]/1000, 0.25f, gameControlReturnData.pose[1]/1000);
+                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0] / 1000, 0, poseMultiple * gameControlReturnData.pose[1] / 1000);
                         }
                     }
                 }
                 else
                 {
                     Debug.Log("GCINFO:Not valid playernumber");
-                    // Debug.Log("Moving Team0 players based randomly ");
-                    // foreach (GameObject player in team0Players)
-                    // {
-                    //     // Get the Transform component of the player
-                    //     Transform playerTransform = player.transform;
-
-                    //     GameObject fieldObject = GameObject.Find("Field"); 
-                    //     if (fieldObject != null) {
-                    //         Transform fieldTransform = fieldObject.transform;
-                    //         // Modify the position (you can adjust these values as needed)
-                    //         float newX = UnityEngine.Random.Range(-2.3f, 2.3f); // Example: random X position between -5 and 5
-                    //         float newY = .25f;
-                    //         float newZ = UnityEngine.Random.Range(-1.53f, 1.53f); // Example: random Z position between -5 and 5
-                    //         Vector3 fieldRelativePosition = new Vector3(newX, newY, newZ);
-                    //         playerTransform.position = fieldTransform.TransformPoint(fieldRelativePosition);
-                    //     }
-                    // }
                 }
                 returnUpdateReady = false;
             }
