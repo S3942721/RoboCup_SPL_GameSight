@@ -195,7 +195,7 @@ public class PassiveGCInfo : MonoBehaviour
         }
         catch (Exception err)
         {
-            Debug.LogError("GCINFO:Caught Exception during ReceiveMessages");
+            Debug.LogError("PASSIVEGCINFO:Caught Exception during ReceiveMessages");
             Debug.LogError(err.ToString());
             return null;
         }
@@ -208,11 +208,12 @@ public class PassiveGCInfo : MonoBehaviour
             if (gcInfoClient != null)
             {
                 GameControlData data = await Task.Run(() => ReceiveMessages(gcInfoClient, targetIpAddress, gcInfoPort, "RGTr", "Passive GC"));
-                Debug.Log("got some sorta GC Data");
-                Debug.Log(data);
-                Debug.Log(data != null);
+
                 if (data != null)
                 {
+                    Debug.Log("PASSIVEGCINFO: GC Data Recieved");
+                    Debug.Log(data);
+                    Debug.Log(data != null);
                     // Handle the data accordingly
                     gameControlData = data;
                     Debug.Log($"Received Pasive GC Data: {gameControlData.ToString()}");
@@ -224,7 +225,6 @@ public class PassiveGCInfo : MonoBehaviour
                     errorString = "Something went wrong getting GCinfo\nIs there a GameController Online";
                 }
             }
-            Debug.Log("Got to here");
         }
     }
 

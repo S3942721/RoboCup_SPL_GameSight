@@ -322,13 +322,15 @@ public class GCInfo : MonoBehaviour
                 UpdateTimer();
             }
 
-
-            // // THIS IS FOR DEBUG ONLY
-            // // Dynamically find and assign player GameObjects
-            // player0_1 = GameObject.Find("Player0-1");
-            // // player0_1_move_index = MovePlayer(player0_1, player0_1_move_index);
-            // Transform player0_1Transform = player0_1.transform;
-            // player0_1Transform.localPosition = new Vector3(-2.7f, 0.25f, -1.74f);
+            //Debug.Log("DEBUG_TASKS: ROATED and MOVED");
+            // THIS IS FOR DEBUG ONLY
+            // Dynamically find and assign player GameObjects
+            //player0_1 = GameObject.Find("Player0-1");
+            // player0_1_move_index = MovePlayer(player0_1, player0_1_move_index);
+            //Transform player0_1Transform = player0_1.transform;
+            //player0_1Transform.localPosition = new Vector3(-2.7f, 0.25f, -1.74f);
+            //Transform player0_1RotMarker = player0_1Transform.Find("PlayerRotMarker");
+            //player0_1RotMarker.localRotation = Quaternion.Euler(0, 45, 0);
 
             // // Dynamically find and assign player GameObjects
             // player0_2 = GameObject.Find("Player0-2");
@@ -455,27 +457,51 @@ public class GCInfo : MonoBehaviour
                         currentPlayerPlate.text = gameControlReturnData.ToString();
                     }
 
+                    // Check if pose data is valid before updating the position
                     if (currentPlayer != null)
                     {
                         // Get the Transform component of the player
                         Transform playerTransform = currentPlayer.transform;
-
+                        
                         // Check if pose data is valid before updating the position
                         if (gameControlReturnData.poseValid)
                         {
-                            playerTransform.localPosition = new Vector3(poseMultiple * gameControlReturnData.pose[0] / 1000, 0, poseMultiple * gameControlReturnData.pose[1] / 1000);
+                            // Update the position
+                            float xPosition = poseMultiple * gameControlReturnData.pose[0] / 1000;
+                            float zPosition = poseMultiple * gameControlReturnData.pose[1] / 1000;
+                            playerTransform.localPosition = new Vector3(xPosition, 0, zPosition);
+                            // Find the PlayerRotMarker child object
+                            Transform playerRotMarker = playerTransform.Find("PlayerRotMarker");
+                            
+                            if (playerRotMarker != null)
+                            {
+                                // Update the rotation (assuming pose[2] contains the rotation value in radians -> 0 to 2π)
+                                float rotationAngle = gameControlReturnData.pose[2]; // Get the rotation value
+                                
+                                // Adjust rotation based on poseMultiple
+                                if (poseMultiple == -1) // TODO: Check if this is correct, may be the other way around
+                                {
+                                    rotationAngle += Mathf.PI; // Add 180 degrees (π radians)
+                                }
+                                
+                                Vector3 rotationEuler = new Vector3(0, rotationAngle * Mathf.Rad2Deg, 0); // Convert to degrees
+                                playerRotMarker.localRotation = Quaternion.Euler(rotationEuler); // Set the rotation
+                            }
+                            else
+                            {
+                                Debug.LogError("GCINFO:PlayerRotMarker not found as child of player object");
+                            }
                         }
                     }
                 }
-                else
-                {
-                    Debug.Log("GCINFO:Not valid playernumber");
-                }
-                returnUpdateReady = false;
             }
+            else
+            {
+                Debug.Log("GCINFO:Not valid playernumber");
+            }
+            returnUpdateReady = false;
         }
     }
-
 
     async Task HandleRGTrPacket(string headerMagic)
     {
@@ -490,8 +516,6 @@ public class GCInfo : MonoBehaviour
                     gameControlData = data;
                     // Debug.Log($"Received {headerMagic}: {gameControlData.ToString()}");
                     updateReady = true;
-
-
                 }
             }
         }
@@ -540,8 +564,6 @@ public class GCInfo : MonoBehaviour
             forwardedStatusClient.Close();
         }
     }
-
-
 
     static GameControlData ReceiveMessages(UdpClient controlClient, IPAddress targetIpAddress, int targetPort, string headerMagic, string messageType)
     {
@@ -725,6 +747,4 @@ public class GCInfo : MonoBehaviour
         }
         return currentPositionIndex;
     }
-
 }
-
